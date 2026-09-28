@@ -1,220 +1,181 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Admin Login - BSN</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@500;600&display=swap');
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            min-height: 100vh;
-            background: linear-gradient(160deg, #2c2926 0%, #3d3732 40%, #4a6b5c 100%);
-            font-family: 'DM Sans', sans-serif; color: #f0e8df;
-            display: flex; align-items: center; justify-content: center; padding: 24px;
-            animation: pageIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
-        }
-        @keyframes pageIn {
-            from { opacity: 0; transform: translateY(12px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .box {
-            width: 100%; max-width: 420px; background: #2a2623;
-            border: 1px solid #3d3732; border-radius: 20px; padding: 32px 26px;
-            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
-            animation: cardIn 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
-        }
-        @keyframes cardIn {
-            from { opacity: 0; transform: translateY(18px) scale(0.98); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        .logo {
-            width: 48px; height: 48px; margin: 0 auto 14px; border-radius: 14px;
-            background: linear-gradient(145deg, #8fbfa8, #4a6b5c); color: #1c1a18;
-            display: grid; place-items: center; font-family: 'Fraunces', serif;
-            font-size: 20px; font-weight: 700;
-        }
-        h1 { font-family: 'Fraunces', serif; font-size: 24px; margin-bottom: 6px; text-align: center; color: #f0e8df; }
-        .sub { color: #a89b8f; font-size: 14px; margin-bottom: 22px; text-align: center; }
-        label { display: block; font-size: 12px; font-weight: 600; color: #a89b8f; margin-bottom: 6px; }
-        input {
-            width: 100%; padding: 12px 14px; border: 1px solid #3d3732; border-radius: 10px;
-            background: #1c1a18; color: #f0e8df; font-size: 14px; margin-bottom: 14px; font-family: inherit;
-        }
-        input:focus { outline: none; border-color: #8fbfa8; box-shadow: 0 0 0 3px rgba(143, 191, 168, 0.15); }
-        .captcha-box {
-            background: #342f2b; border: 1px solid #3d3732; border-radius: 12px;
-            padding: 14px; margin-bottom: 12px;
-        }
-        .captcha-label { font-size: 12px; font-weight: 600; color: #a89b8f; margin-bottom: 8px; }
-        #captchaCanvas {
-            width: 100%; max-width: 240px; height: 64px;
-            border-radius: 8px; border: 1px solid #3d3732; background: #f3ebe2;
-            cursor: pointer; display: block;
-        }
-        .captcha-row { display: flex; gap: 8px; margin-top: 10px; align-items: center; }
-        .captcha-row input { margin-bottom: 0; flex: 1; }
-        .refresh-btn {
-            border: 1px solid #3d3732; background: #1c1a18; border-radius: 10px;
-            width: 44px; height: 44px; cursor: pointer; font-size: 18px; color: #8fbfa8;
-        }
-        button.primary {
-            width: 100%; padding: 13px; border: none; border-radius: 10px;
-            background: #4a6b5c; color: #fff; font-weight: 700; font-size: 14px;
-            cursor: pointer; font-family: inherit; margin-top: 6px;
-        }
-        button.primary:hover { background: #3a5649; }
-        .msg { margin-top: 12px; font-size: 13px; text-align: center; min-height: 18px; }
-        .msg.error { color: #e07a6e; }
-        .msg.ok { color: #7dba9a; }
-        .links { margin-top: 16px; text-align: center; font-size: 13px; color: #a89b8f; }
-        .links a { color: #8fbfa8; font-weight: 600; text-decoration: none; }
-        #loginForm { display: none; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin Login · BSN Fraud Detection</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bsn-blue:#003366; --bsn-blue-deep:#001a33; --bg:#0b1a33;
+  --card:#fff; --text:#1a2332; --muted:#5c6b7c; --line:#c5d0de;
+  --danger:#b42318; --danger-bg:#fdecea; --ok:#0f6b4c;
+}
+body{
+  min-height:100vh;font-family:'Libre Franklin',system-ui,sans-serif;color:var(--text);
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0,82,163,.45), transparent 55%),
+    linear-gradient(165deg,#0b1a33,#102844 50%,#0d213f);
+  display:flex;align-items:center;justify-content:center;padding:24px;
+}
+.card{
+  width:100%;max-width:420px;background:var(--card);border:1px solid #d7e0ec;
+  border-radius:4px;box-shadow:0 16px 40px rgba(0,0,0,.35);padding:28px 26px 22px;
+}
+.brand{text-align:center;margin-bottom:18px}
+.brand img{width:100px;height:auto;display:block;margin:0 auto 10px;background:transparent}
+.brand h1{font-size:20px;font-weight:700;color:var(--bsn-blue)}
+.brand p{font-size:12px;color:var(--muted);margin-top:4px}
+.badge{
+  display:inline-block;margin-top:8px;padding:4px 10px;border-radius:2px;
+  font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:#fff;background:var(--bsn-blue);
+}
+label{display:block;font-size:12px;font-weight:600;margin:12px 0 6px;color:var(--bsn-blue-deep)}
+input{
+  width:100%;height:42px;padding:0 12px;border:1px solid var(--line);border-radius:2px;
+  font:inherit;font-size:14px;outline:none;
+}
+input:focus{border-color:var(--bsn-blue);box-shadow:0 0 0 3px rgba(0,51,102,.12)}
+input.invalid{border-color:var(--danger);background:var(--danger-bg)}
+.err{font-size:12px;color:var(--danger);margin-top:5px;display:none}
+.err.show{display:block}
+.captcha-box{margin-top:14px;padding:12px;border:1px solid var(--line);border-radius:2px;background:#f7f9fc}
+.captcha-row{display:flex;gap:10px;align-items:center}
+canvas{border:1px solid var(--line);border-radius:2px;background:#fff;cursor:pointer}
+.btn-refresh{border:1px solid var(--line);background:#fff;height:40px;padding:0 10px;border-radius:2px;font:inherit;font-size:12px;cursor:pointer;color:var(--bsn-blue)}
+button.primary{
+  width:100%;height:44px;margin-top:16px;border:none;border-radius:2px;cursor:pointer;
+  background:var(--bsn-blue);color:#fff;font:inherit;font-size:14px;font-weight:700;
+}
+button.primary:disabled{opacity:.65}
+.msg{margin-top:12px;padding:10px 12px;border-radius:2px;font-size:13px;display:none}
+.msg.show{display:block}
+.msg.error{background:var(--danger-bg);color:var(--danger);border:1px solid #f0b4ae}
+.msg.ok{background:#e8f6ef;color:var(--ok);border:1px solid #b7e0cc}
+.foot{text-align:center;margin-top:14px;font-size:12px;color:var(--muted)}
+.foot a{color:var(--bsn-blue);font-weight:600;text-decoration:none}
+</style>
 </head>
 <body>
-    <div class="box">
-        <div class="logo">H</div>
-        <h1>Admin Access</h1>
-        <p class="sub">Fraud control & system management</p>
-
-        <div id="captchaSection">
-            <div class="captcha-box">
-                <div class="captcha-label">Security check — enter the code shown</div>
-                <canvas id="captchaCanvas" width="240" height="64" title="Click to refresh"></canvas>
-                <div class="captcha-row">
-                    <input type="text" id="captchaAnswer" placeholder="Enter the code" maxlength="6" autocomplete="off">
-                    <button type="button" class="refresh-btn" onclick="newCaptcha()" title="New code">↻</button>
-                </div>
-                <button type="button" class="primary" onclick="verifyCaptcha()">Verify & Continue</button>
-            </div>
-            <div class="msg" id="captchaMsg"></div>
-        </div>
-
-        <form id="loginForm" onsubmit="login(event)">
-            <label>Admin username</label>
-            <input type="text" id="username" required autocomplete="username">
-            <label>Password</label>
-            <input type="password" id="password" required autocomplete="current-password">
-            <button type="submit" class="primary">Enter Control Center</button>
-            <div class="msg" id="msg"></div>
-        </form>
-
-        <div class="links">
-            Need an admin account? <a href="admin-register.html">Register</a> ·
-            <a href="access.html">Back</a>
-        </div>
+  <div class="card">
+    <div class="brand">
+      <img src="img/bsn-logo.jpg" alt="BSN" onerror="this.style.display='none'">
+      <h1>Admin Login</h1>
+      <div class="badge">Fraud Control Centre</div>
+      <p>Admin accounts are issued by SuperAdmin only</p>
     </div>
 
-    <script>
-        let captchaCode = "";
+    <form id="form" novalidate>
+      <label for="login">Username or Email</label>
+      <input id="login" autocomplete="username">
+      <div class="err" id="errLogin">Required</div>
 
-        function randomChar() {
-            const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-            return chars.charAt(Math.floor(Math.random() * chars.length));
-        }
+      <label for="password">Password</label>
+      <input id="password" type="password" autocomplete="current-password">
+      <div class="err" id="errPassword">Required</div>
 
-        function newCaptcha() {
-            const canvas = document.getElementById("captchaCanvas");
-            const ctx = canvas.getContext("2d");
-            const w = canvas.width;
-            const h = canvas.height;
+      <div class="captcha-box">
+        <label style="margin-top:0">CAPTCHA</label>
+        <div class="captcha-row">
+          <canvas id="captchaCanvas" width="140" height="44"></canvas>
+          <button type="button" class="btn-refresh" id="btnRefresh">Refresh</button>
+        </div>
+        <input id="captchaInput" style="margin-top:10px" placeholder="Enter the code above" autocomplete="off">
+        <div class="err" id="errCaptcha">CAPTCHA is required</div>
+      </div>
 
-            captchaCode = "";
-            for (let i = 0; i < 5; i++) captchaCode += randomChar();
+      <button class="primary" id="btn" type="submit">Login as Admin</button>
+      <div class="msg" id="msg"></div>
+    </form>
 
-            ctx.fillStyle = "#f3ebe2";
-            ctx.fillRect(0, 0, w, h);
+    <div class="foot">
+      <a href="access.html">← Back to access</a><br><br>
+      No public admin registration. Contact SuperAdmin.
+    </div>
+  </div>
 
-            for (let i = 0; i < 6; i++) {
-                ctx.strokeStyle = "rgba(74,107,92," + (0.15 + Math.random() * 0.25) + ")";
-                ctx.beginPath();
-                ctx.moveTo(Math.random() * w, Math.random() * h);
-                ctx.lineTo(Math.random() * w, Math.random() * h);
-                ctx.stroke();
-            }
+<script>
+const API = "https://fraud-detection-system-j4bg.onrender.com";
+let captchaId="", captchaCode="";
+const $ = id => document.getElementById(id);
+function setInvalid(input, errEl, on, text){
+  input.classList.toggle("invalid", on);
+  if(text) errEl.textContent=text;
+  errEl.classList.toggle("show", on);
+}
+function drawCaptcha(code){
+  const c=$("captchaCanvas"), ctx=c.getContext("2d");
+  ctx.clearRect(0,0,c.width,c.height);
+  ctx.fillStyle="#f4f7fb"; ctx.fillRect(0,0,c.width,c.height);
+  ctx.font="bold 22px Libre Franklin,sans-serif"; ctx.fillStyle="#003366"; ctx.textBaseline="middle";
+  let x=16; for(const ch of code){ ctx.fillText(ch,x,22); x+=24; }
+}
+async function loadCaptcha(){
+  try{
+    const res=await fetch(API+"/api/auth/captcha");
+    const data=await res.json();
+    captchaId=data.captchaId; captchaCode=data.captchaCode||"";
+    drawCaptcha(captchaCode); $("captchaInput").value="";
+  }catch(e){
+    $("msg").className="msg show error";
+    $("msg").textContent="CAPTCHA unavailable — wait for server wake-up";
+  }
+}
+$("btnRefresh").onclick=loadCaptcha;
+$("captchaCanvas").onclick=loadCaptcha;
 
-            for (let i = 0; i < 40; i++) {
-                ctx.fillStyle = "rgba(44,41,38," + (0.08 + Math.random() * 0.15) + ")";
-                ctx.beginPath();
-                ctx.arc(Math.random() * w, Math.random() * h, 1 + Math.random() * 1.5, 0, Math.PI * 2);
-                ctx.fill();
-            }
+$("form").onsubmit=async(e)=>{
+  e.preventDefault();
+  $("msg").className="msg";
+  let ok=true;
+  const login=$("login").value.trim();
+  const password=$("password").value;
+  const captchaInput=$("captchaInput").value.trim();
+  if(!login){ setInvalid($("login"),$("errLogin"),true,"Username or email is required"); ok=false; }
+  else setInvalid($("login"),$("errLogin"),false);
+  if(!password){ setInvalid($("password"),$("errPassword"),true,"Password is required"); ok=false; }
+  else setInvalid($("password"),$("errPassword"),false);
+  if(!captchaInput){ setInvalid($("captchaInput"),$("errCaptcha"),true,"CAPTCHA is required"); ok=false; }
+  else setInvalid($("captchaInput"),$("errCaptcha"),false);
+  if(!ok) return;
 
-            const colors = ["#4a6b5c", "#2c2926", "#c4845c", "#3d7a5a", "#5c4a3a"];
-            for (let i = 0; i < captchaCode.length; i++) {
-                const ch = captchaCode.charAt(i);
-                const x = 28 + i * 40;
-                const y = 40 + (Math.random() * 10 - 5);
-                const angle = (Math.random() * 0.5) - 0.25;
-                ctx.save();
-                ctx.translate(x, y);
-                ctx.rotate(angle);
-                ctx.font = "bold " + (26 + Math.floor(Math.random() * 4)) + "px DM Sans, Arial";
-                ctx.fillStyle = colors[i % colors.length];
-                ctx.fillText(ch, 0, 0);
-                ctx.restore();
-            }
-
-            document.getElementById("captchaAnswer").value = "";
-            document.getElementById("captchaMsg").textContent = "";
-            document.getElementById("captchaMsg").className = "msg";
-        }
-
-        function verifyCaptcha() {
-            const ans = (document.getElementById("captchaAnswer").value || "").trim().toUpperCase();
-            const msg = document.getElementById("captchaMsg");
-            if (!ans) {
-                msg.className = "msg error";
-                msg.textContent = "Enter the security code.";
-                return;
-            }
-            if (ans !== captchaCode) {
-                msg.className = "msg error";
-                msg.textContent = "Incorrect code. New code generated.";
-                newCaptcha();
-                return;
-            }
-            msg.className = "msg ok";
-            msg.textContent = "Verified.";
-            document.getElementById("captchaSection").style.display = "none";
-            document.getElementById("loginForm").style.display = "block";
-        }
-
-        async function login(e) {
-            e.preventDefault();
-            const msg = document.getElementById("msg");
-            try {
-                const res = await fetch("https://fraud-detection-system-j4bg.onrender.com/api/auth/login", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        username: document.getElementById("username").value.trim(),
-                        password: document.getElementById("password").value,
-                        role: "ADMIN"
-                    })
-                });
-                const data = await res.json();
-                if (data.success) {
-                    sessionStorage.setItem("isLoggedIn", "true");
-                    sessionStorage.setItem("role", data.role || "ADMIN");
-                    sessionStorage.setItem("fullName", data.fullName || data.username);
-                    sessionStorage.setItem("username", data.username);
-                    sessionStorage.setItem("token", data.token || "");
-                    msg.className = "msg ok";
-                    msg.textContent = "Access granted...";
-                    setTimeout(() => window.location.href = "dashboard.html", 700);
-                } else {
-                    msg.className = "msg error";
-                    msg.textContent = data.message || "Authentication failed";
-                }
-            } catch {
-                msg.className = "msg error";
-                msg.textContent = "Server offline. Start Spring Boot first.";
-            }
-        }
-
-        document.getElementById("captchaCanvas").addEventListener("click", newCaptcha);
-        newCaptcha();
-    </script>
+  $("btn").disabled=true; $("btn").textContent="Signing in…";
+  try{
+    const res=await fetch(API+"/api/auth/login",{
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({ login, username:login, password, captchaId, captchaInput })
+    });
+    const data=await res.json().catch(()=>({}));
+    if(!res.ok || data.success===false){
+      const message=data.message||"Login failed";
+      if(data.field==="captcha") setInvalid($("captchaInput"),$("errCaptcha"),true,message);
+      $("msg").className="msg show error"; $("msg").textContent=message;
+      await loadCaptcha();
+      return;
+    }
+    const role=(data.role||"").toUpperCase();
+    if(role!=="ADMIN" && role!=="SUPER_ADMIN"){
+      $("msg").className="msg show error";
+      $("msg").textContent="This account is not an admin. Use Customer Login.";
+      await loadCaptcha();
+      return;
+    }
+    sessionStorage.setItem("username", data.username);
+    sessionStorage.setItem("role", data.role);
+    sessionStorage.setItem("fullName", data.fullName||"");
+    sessionStorage.setItem("email", data.email||"");
+    $("msg").className="msg show ok"; $("msg").textContent="Welcome. Redirecting…";
+    setTimeout(()=> location.href="dashboard.html", 500);
+  }catch(err){
+    $("msg").className="msg show error";
+    $("msg").textContent="Server offline or waking up. Wait and try again.";
+  }finally{
+    $("btn").disabled=false; $("btn").textContent="Login as Admin";
+  }
+};
+loadCaptcha();
+</script>
 </body>
 </html>

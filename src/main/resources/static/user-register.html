@@ -1,74 +1,308 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Customer Register - BSN</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@500;600&display=swap');
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { min-height: 100vh; background: #f4f1ea; font-family: 'DM Sans', sans-serif; color: #1b242c; display: flex; align-items: center; justify-content: center; padding: 24px; }
-        .box { width: 100%; max-width: 420px; background: #fffcf7; border: 1px solid #e6e0d4; border-radius: 20px; padding: 32px 26px; }
-        h1 { font-family: 'Fraunces', serif; font-size: 24px; margin-bottom: 6px; }
-        .sub { color: #5c6b76; font-size: 14px; margin-bottom: 20px; }
-        label { display: block; font-size: 12px; font-weight: 600; color: #5c6b76; margin-bottom: 6px; }
-        input { width: 100%; padding: 12px 14px; border: 1px solid #ddd5c7; border-radius: 10px; margin-bottom: 14px; font-family: inherit; }
-        button { width: 100%; padding: 13px; border: none; border-radius: 10px; background: #1f6f64; color: white; font-weight: 700; cursor: pointer; }
-        .msg { margin-top: 12px; font-size: 13px; text-align: center; }
-        .links { margin-top: 16px; text-align: center; font-size: 13px; }
-        .links a { color: #1f6f64; font-weight: 600; text-decoration: none; }
-        .guide { font-size: 12px; color: #8a96a0; margin: -6px 0 14px; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Customer Register · BSN Fraud Detection</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bsn-blue:#003366;
+  --bsn-blue-deep:#00264d;
+  --bsn-gold:#c4a35a;
+  --bg:#e9eef5;
+  --card:#fff;
+  --text:#1a2332;
+  --muted:#5c6b7c;
+  --line:#c5d0de;
+  --danger:#b42318;
+  --danger-bg:#fdecea;
+  --ok:#0f6b4c;
+}
+body{
+  min-height:100vh;
+  font-family:'Libre Franklin',system-ui,sans-serif;
+  color:var(--text);
+  background:
+    linear-gradient(180deg, rgba(0,51,102,.12), rgba(233,238,245,.96)),
+    var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  padding:24px;
+}
+.card{
+  width:100%;max-width:440px;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:4px;
+  box-shadow:0 10px 30px rgba(0,38,77,.08);
+  padding:28px 26px 22px;
+}
+.brand{text-align:center;margin-bottom:18px}
+.brand img{
+  width:96px;height:auto;display:block;margin:0 auto 10px;
+  background:transparent;
+}
+.brand h1{font-size:20px;font-weight:700;color:var(--bsn-blue);letter-spacing:.02em}
+.brand p{font-size:13px;color:var(--muted);margin-top:4px}
+label{display:block;font-size:12px;font-weight:600;margin:12px 0 6px;color:var(--bsn-blue-deep)}
+input{
+  width:100%;height:42px;padding:0 12px;
+  border:1px solid var(--line);border-radius:2px;
+  font:inherit;font-size:14px;background:#fff;color:var(--text);
+  outline:none;transition:border-color .15s, box-shadow .15s;
+}
+input:focus{border-color:var(--bsn-blue);box-shadow:0 0 0 3px rgba(0,51,102,.12)}
+input.invalid{border-color:var(--danger);background:var(--danger-bg)}
+.hint{font-size:11px;color:var(--muted);margin-top:5px}
+.err{font-size:12px;color:var(--danger);margin-top:5px;display:none}
+.err.show{display:block}
+.rules{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.45}
+.rules span.ok{color:var(--ok);font-weight:600}
+.rules span.bad{color:var(--danger)}
+.captcha-box{
+  margin-top:14px;padding:12px;
+  border:1px solid var(--line);border-radius:2px;background:#f7f9fc;
+}
+.captcha-row{display:flex;gap:10px;align-items:center}
+canvas{
+  border:1px solid var(--line);border-radius:2px;background:#fff;cursor:pointer;
+}
+.btn-refresh{
+  border:1px solid var(--line);background:#fff;height:40px;padding:0 10px;
+  border-radius:2px;font:inherit;font-size:12px;cursor:pointer;color:var(--bsn-blue);
+}
+.btn-refresh:hover{background:#eef3f9}
+button.primary{
+  width:100%;height:44px;margin-top:16px;
+  border:none;border-radius:2px;cursor:pointer;
+  background:var(--bsn-blue);color:#fff;
+  font:inherit;font-size:14px;font-weight:700;letter-spacing:.03em;
+}
+button.primary:hover{background:var(--bsn-blue-deep)}
+button.primary:disabled{opacity:.65;cursor:not-allowed}
+.msg{
+  margin-top:12px;padding:10px 12px;border-radius:2px;font-size:13px;display:none;
+}
+.msg.show{display:block}
+.msg.error{background:var(--danger-bg);color:var(--danger);border:1px solid #f0b4ae}
+.msg.ok{background:#e8f6ef;color:var(--ok);border:1px solid #b7e0cc}
+.foot{text-align:center;margin-top:14px;font-size:13px}
+.foot a{color:var(--bsn-blue);font-weight:600;text-decoration:none}
+.foot a:hover{text-decoration:underline}
+</style>
 </head>
 <body>
-    <div class="box">
-        <h1>Create Customer Account</h1>
-        <p class="sub">Register to monitor your transactions</p>
-        <label>Full Name</label>
-        <input id="fullName" type="text">
-        <label>Username</label>
-        <input id="username" type="text">
-        <label>Password</label>
-        <input id="password" type="password">
-        <div class="guide">Min 8 chars, 1 uppercase, 1 number, 1 special character</div>
-        <button onclick="register()">Register</button>
-        <div class="msg" id="msg"></div>
-        <div class="links"><a href="user-login.html">Back to login</a></div>
+  <div class="card">
+    <div class="brand">
+      <img src="img/bsn-logo.jpg" alt="BSN" onerror="this.style.display='none'">
+      <h1>Create Customer Account</h1>
+      <p>Register to monitor your transactions</p>
     </div>
-    <script>
-        async function register() {
-            const msg = document.getElementById("msg");
-            const password = document.getElementById("password").value;
-            const strong = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
-            if (!strong.test(password)) {
-                msg.style.color = "#b42318";
-                msg.textContent = "Password does not meet requirements";
-                return;
-            }
-            try {
-                const res = await fetch("https://fraud-detection-system-j4bg.onrender.com/api/auth/register", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        fullName: document.getElementById("fullName").value.trim(),
-                        username: document.getElementById("username").value.trim(),
-                        password: password,
-                        role: "USER"
-                    })
-                });
-                const data = await res.json();
-                if (data.success) {
-                    msg.style.color = "#1f6f64";
-                    msg.textContent = "Registered! Account: " + (data.accountNumber || "") + " Redirecting...";
-                    setTimeout(() => window.location.href = "user-login.html", 1200);
-                } else {
-                    msg.style.color = "#b42318";
-                    msg.textContent = data.message || "Failed";
-                }
-            } catch {
-                msg.style.color = "#b42318";
-                msg.textContent = "Server offline";
-            }
-        }
-    </script>
+
+    <form id="form" novalidate>
+      <label for="fullName">Full Name</label>
+      <input id="fullName" autocomplete="name" placeholder="As per IC / bank record">
+      <div class="err" id="errFullName">Full name is required</div>
+
+      <label for="username">Username</label>
+      <input id="username" autocomplete="username" placeholder="4–40 characters">
+      <div class="hint">Letters, numbers, and . _ @ - only</div>
+      <div class="err" id="errUsername">Invalid or missing username</div>
+
+      <label for="email">Email</label>
+      <input id="email" type="email" autocomplete="email" placeholder="name@example.com">
+      <div class="err" id="errEmail">Valid email is required</div>
+
+      <label for="password">Password</label>
+      <input id="password" type="password" autocomplete="new-password" placeholder="Create a strong password">
+      <div class="rules" id="pwRules">
+        <span id="rLen">Min 8 chars</span> ·
+        <span id="rUp">1 uppercase</span> ·
+        <span id="rNum">1 number</span> ·
+        <span id="rSp">1 special</span>
+      </div>
+      <div class="err" id="errPassword">Password does not meet requirements</div>
+
+      <div class="captcha-box">
+        <label style="margin-top:0">CAPTCHA</label>
+        <div class="captcha-row">
+          <canvas id="captchaCanvas" width="140" height="44" title="Click to refresh"></canvas>
+          <button type="button" class="btn-refresh" id="btnRefresh">Refresh</button>
+        </div>
+        <input id="captchaInput" style="margin-top:10px" placeholder="Enter the code above" autocomplete="off">
+        <div class="err" id="errCaptcha">CAPTCHA is required</div>
+      </div>
+
+      <button class="primary" id="btnSubmit" type="submit">Register</button>
+      <div class="msg" id="msg"></div>
+    </form>
+
+    <div class="foot">
+      Already have an account? <a href="user-login.html">Back to login</a>
+    </div>
+  </div>
+
+<script>
+const API = "https://fraud-detection-system-j4bg.onrender.com";
+let captchaId = "";
+let captchaCode = "";
+
+function $(id){ return document.getElementById(id); }
+function setInvalid(input, errEl, on, text){
+  input.classList.toggle("invalid", on);
+  if (text) errEl.textContent = text;
+  errEl.classList.toggle("show", on);
+}
+function validUsername(u){ return /^[A-Za-z0-9._@-]{4,40}$/.test(u); }
+function validEmail(e){ return /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(e); }
+function pwCheck(p){
+  return {
+    len: p.length >= 8,
+    up: /[A-Z]/.test(p),
+    num: /[0-9]/.test(p),
+    sp: /[^A-Za-z0-9]/.test(p)
+  };
+}
+function paintPwRules(p){
+  const c = pwCheck(p);
+  [["rLen",c.len],["rUp",c.up],["rNum",c.num],["rSp",c.sp]].forEach(([id,ok])=>{
+    const el=$(id);
+    el.className = ok ? "ok" : "bad";
+  });
+  return c.len && c.up && c.num && c.sp;
+}
+
+function drawCaptcha(code){
+  const canvas = $("captchaCanvas");
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle = "#f4f7fb";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  for(let i=0;i<5;i++){
+    ctx.strokeStyle = `rgba(0,51,102,${0.15+Math.random()*0.2})`;
+    ctx.beginPath();
+    ctx.moveTo(Math.random()*140, Math.random()*44);
+    ctx.lineTo(Math.random()*140, Math.random()*44);
+    ctx.stroke();
+  }
+  ctx.font = "bold 22px Libre Franklin, sans-serif";
+  ctx.fillStyle = "#003366";
+  ctx.textBaseline = "middle";
+  let x = 16;
+  for(const ch of code){
+    const angle = (Math.random()-0.5)*0.4;
+    ctx.save();
+    ctx.translate(x, 22+(Math.random()-0.5)*6);
+    ctx.rotate(angle);
+    ctx.fillText(ch,0,0);
+    ctx.restore();
+    x += 24;
+  }
+}
+
+async function loadCaptcha(){
+  try{
+    const res = await fetch(API + "/api/auth/captcha");
+    const data = await res.json();
+    captchaId = data.captchaId;
+    captchaCode = data.captchaCode || "";
+    drawCaptcha(captchaCode);
+    $("captchaInput").value = "";
+    setInvalid($("captchaInput"), $("errCaptcha"), false);
+  }catch(e){
+    showMsg("Could not load CAPTCHA. Server may be waking up — wait and refresh.", true);
+  }
+}
+
+function showMsg(text, isErr){
+  const m=$("msg");
+  m.textContent=text;
+  m.className = "msg show " + (isErr?"error":"ok");
+}
+
+function validate(){
+  let ok = true;
+  const fullName=$("fullName").value.trim();
+  const username=$("username").value.trim();
+  const email=$("email").value.trim();
+  const password=$("password").value;
+  const captchaInput=$("captchaInput").value.trim();
+
+  if(!fullName){ setInvalid($("fullName"),$("errFullName"),true,"Full name is required"); ok=false; }
+  else setInvalid($("fullName"),$("errFullName"),false);
+
+  if(!username){ setInvalid($("username"),$("errUsername"),true,"Username is required"); ok=false; }
+  else if(!validUsername(username)){ setInvalid($("username"),$("errUsername"),true,"Username must be 4–40 chars (letters, numbers, . _ @ -)"); ok=false; }
+  else setInvalid($("username"),$("errUsername"),false);
+
+  if(!email){ setInvalid($("email"),$("errEmail"),true,"Email is required"); ok=false; }
+  else if(!validEmail(email)){ setInvalid($("email"),$("errEmail"),true,"Enter a valid email address"); ok=false; }
+  else setInvalid($("email"),$("errEmail"),false);
+
+  if(!paintPwRules(password)){ setInvalid($("password"),$("errPassword"),true,"Password does not meet requirements"); ok=false; }
+  else setInvalid($("password"),$("errPassword"),false);
+
+  if(!captchaInput){ setInvalid($("captchaInput"),$("errCaptcha"),true,"CAPTCHA is required"); ok=false; }
+  else setInvalid($("captchaInput"),$("errCaptcha"),false);
+
+  return ok;
+}
+
+$("password").addEventListener("input", e => paintPwRules(e.target.value));
+$("btnRefresh").addEventListener("click", loadCaptcha);
+$("captchaCanvas").addEventListener("click", loadCaptcha);
+
+$("form").addEventListener("submit", async (e)=>{
+  e.preventDefault();
+  $("msg").className="msg";
+  if(!validate()) return;
+
+  $("btnSubmit").disabled = true;
+  $("btnSubmit").textContent = "Creating account…";
+  try{
+    const res = await fetch(API + "/api/auth/register", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({
+        fullName: $("fullName").value.trim(),
+        username: $("username").value.trim(),
+        email: $("email").value.trim(),
+        password: $("password").value,
+        captchaId,
+        captchaInput: $("captchaInput").value.trim()
+      })
+    });
+    const data = await res.json().catch(()=>({}));
+    if(!res.ok || data.success===false){
+      const field = data.field;
+      const message = data.message || "Registration failed";
+      if(field==="username") setInvalid($("username"),$("errUsername"),true,message);
+      else if(field==="email") setInvalid($("email"),$("errEmail"),true,message);
+      else if(field==="password") setInvalid($("password"),$("errPassword"),true,message);
+      else if(field==="fullName") setInvalid($("fullName"),$("errFullName"),true,message);
+      else if(field==="captcha") setInvalid($("captchaInput"),$("errCaptcha"),true,message);
+      showMsg(message, true);
+      await loadCaptcha();
+      return;
+    }
+    showMsg("Registration successful. Redirecting…", false);
+    sessionStorage.setItem("username", data.username);
+    sessionStorage.setItem("role", data.role || "USER");
+    sessionStorage.setItem("accountNumber", data.accountNumber || "");
+    sessionStorage.setItem("fullName", $("fullName").value.trim());
+    sessionStorage.setItem("email", $("email").value.trim());
+    setTimeout(()=> location.href = "user-dashboard.html", 700);
+  }catch(err){
+    showMsg("Server offline or waking up. Wait 30–60s and try again.", true);
+  }finally{
+    $("btnSubmit").disabled = false;
+    $("btnSubmit").textContent = "Register";
+  }
+});
+
+loadCaptcha();
+paintPwRules("");
+</script>
 </body>
 </html>
