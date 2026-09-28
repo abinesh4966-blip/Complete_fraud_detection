@@ -54,9 +54,10 @@
         </div>
     </div>
     <script>
-        if (sessionStorage.getItem("isLoggedIn") !== "true" || sessionStorage.getItem("role") !== "ADMIN") {
-            window.location.href = "access.html";
-        }
+        const __role = (sessionStorage.getItem("role") || "").toUpperCase();
+    if (sessionStorage.getItem("isLoggedIn") !== "true" || (__role !== "ADMIN" && __role !== "SUPER_ADMIN")) {
+        window.location.href = "access.html";
+    }
         function applyTheme() {
             const dark = localStorage.getItem("theme") === "dark";
             document.body.classList.toggle("dark", dark);
