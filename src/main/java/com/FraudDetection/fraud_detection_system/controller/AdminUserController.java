@@ -5,7 +5,6 @@ import com.FraudDetection.fraud_detection_system.model.User;
 import com.FraudDetection.fraud_detection_system.repository.TransactionRepository;
 import com.FraudDetection.fraud_detection_system.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.charset.StandardCharsets;
@@ -36,32 +35,27 @@ public class AdminUserController {
             }
             return hex.toString();
         } catch (Exception e) {
-            throw new RuntimeException("Error hashing password", e);
+            throw new RuntimeException(e);
         }
     }
 
-    private Optional<User> requireSuperAdmin(String actorUsername) {
-        if (actorUsername == null || actorUsername.isBlank()) return Optional.empty();
-        Optional<User> opt = userRepository.findByUsername(actorUsername.trim());
-        if (opt.isEmpty()) return Optional.empty();
-        if (!"SUPER_ADMIN".equalsIgnoreCase(opt.get().getRole())) return Optional.empty();
-        return opt;
+    private User requireActor(String actorUsername) {
+        if (actorUsername == null || actorUsername.isBlank()) return null;
+        return userRepository.findByUsername(actorUsername.trim()).orElse(null);
     }
 
-    private Optional<User> requireAdminOrSuper(String actorUsername) {
-        if (actorUsername == null || actorUsername.isBlank()) return Optional.empty();
-        Optional<User> opt = userRepository.findByUsername(actorUsername.trim());
-        if (opt.isEmpty()) return Optional.empty();
-        String role = opt.get().getRole() != null ? opt.get().getRole().toUpperCase() : "";
-        if (!"ADMIN".equals(role) && !"SUPER_ADMIN".equals(role)) return Optional.empty();
-        return opt;
+    private boolean isSuper(User u) {
+        return u != null && "SUPER_ADMIN".equalsIgnoreCase(u.getRole());
     }
 
-    // -------------------------------------------------------------------------
-    // SUMMARY
-    // -------------------------------------------------------------------------
+    private boolean isAdminStaff(User u) {
+        if (u == null || u.getRole() == null) return false;
+        String r = u.getRole().toUpperCase();
+        return r.equals("ADMIN") || r.equals("SUPER_ADMIN");
+    }
+
     @GetMapping("/summary")
-    public Map<String, Object> summary(@RequestParam(required = false) String actorUsername) {
+    public Map<String, Object> summary() {
         Map<String, Object> res = new HashMap<>();
         try {
             List<User> users = userRepository.findAll();
@@ -77,7 +71,6 @@ public class AdminUserController {
                 if ("SUPER_ADMIN".equals(role)) superRole++;
                 else if ("ADMIN".equals(role)) adminRole++;
                 else userRole++;
-
                 if (u.getLockoutUntil() != null && u.getLockoutUntil().isAfter(now)) locked++;
                 if (u.getLastLoginAt() != null && u.getLastLoginAt().isAfter(dayAgo)) active24h++;
                 if (u.getLastLoginAt() != null && u.getLastLoginAt().isAfter(weekAgo)) active7d++;
@@ -86,9 +79,7 @@ public class AdminUserController {
             long flaggedTx = 0;
             for (Transaction t : txs) {
                 if (t == null) continue;
-                if ("SUSPICIOUS".equalsIgnoreCase(t.getStatus()) && !t.isFalsePositive()) {
-                    flaggedTx++;
-                }
+                if ("SUSPICIOUS".equals(t.getStatus()) && !t.isFalsePositive()) flaggedTx++;
             }
 
             res.put("success", true);
@@ -108,10 +99,7 @@ public class AdminUserController {
         return res;
     }
 
-    // -------------------------------------------------------------------------
-    // LIST USERS (with detection pressure)
-    // -------------------------------------------------------------------------
-    @GetMapping
+    @GetMapping("/list")
     public List<Map<String, Object>> list() {
         List<Map<String, Object>> rows = new ArrayList<>();
         try {
@@ -121,40 +109,15 @@ public class AdminUserController {
 
             for (User u : users) {
                 if (u == null) continue;
-
-                long total = 0, flagged = 0, cleared = 0;
-                int maxRisk = 0;
+                long txCount = 0, txFlagged = 0;
                 String acc = u.getAccountNumber();
-
                 for (Transaction t : txs) {
                     if (t == null) continue;
-                    String tAcc = t.getAccountNumber();
-                    if (acc != null && acc.equals(tAcc)) {
-                        total++;
-                        int risk = t.getRiskScore();
-                        if (risk > maxRisk) maxRisk = risk;
-                        if ("SUSPICIOUS".equalsIgnoreCase(t.getStatus()) && !t.isFalsePositive()) {
-                            flagged++;
-                        } else {
-                            cleared++;
-                        }
+                    if (acc != null && acc.equals(t.getAccountNumber())) {
+                        txCount++;
+                        if ("SUSPICIOUS".equals(t.getStatus()) && !t.isFalsePositive()) txFlagged++;
                     }
                 }
-
-                double flaggedRate = total > 0 ? (flagged * 100.0 / total) : 0.0;
-
-                boolean locked = u.getLockoutUntil() != null && u.getLockoutUntil().isAfter(now);
-                String activity = "INACTIVE";
-                if (u.getLastLoginAt() != null) {
-                    if (u.getLastLoginAt().isAfter(now.minusHours(24))) activity = "ACTIVE_24H";
-                    else if (u.getLastLoginAt().isAfter(now.minusDays(7))) activity = "ACTIVE_7D";
-                }
-
-                String riskBand = "NONE";
-                if (flagged >= 5 || flaggedRate >= 40 || maxRisk >= 75) riskBand = "HIGH";
-                else if (flagged >= 2 || flaggedRate >= 20 || maxRisk >= 50) riskBand = "MEDIUM";
-                else if (flagged >= 1) riskBand = "LOW";
-
                 Map<String, Object> row = new LinkedHashMap<>();
                 row.put("id", u.getId());
                 row.put("username", u.getUsername());
@@ -164,20 +127,14 @@ public class AdminUserController {
                 row.put("accountNumber", u.getAccountNumber());
                 row.put("failedAttempts", u.getFailedAttempts());
                 row.put("lockoutLevel", u.getLockoutLevel());
-                row.put("locked", locked);
+                row.put("locked", u.getLockoutUntil() != null && u.getLockoutUntil().isAfter(now));
                 row.put("lockoutUntil", u.getLockoutUntil() != null ? u.getLockoutUntil().toString() : null);
-                row.put("createdAt", u.getCreatedAt() != null ? u.getCreatedAt().toString() : null);
                 row.put("lastLoginAt", u.getLastLoginAt() != null ? u.getLastLoginAt().toString() : null);
-                row.put("activity", activity);
-                row.put("txTotal", total);
-                row.put("txFlagged", flagged);
-                row.put("txCleared", cleared);
-                row.put("flaggedRate", Math.round(flaggedRate * 10.0) / 10.0);
-                row.put("maxRisk", maxRisk);
-                row.put("riskBand", riskBand);
+                row.put("createdAt", u.getCreatedAt() != null ? u.getCreatedAt().toString() : null);
+                row.put("txCount", txCount);
+                row.put("txFlagged", txFlagged);
                 rows.add(row);
             }
-
             rows.sort((a, b) -> Long.compare(
                     ((Number) b.get("txFlagged")).longValue(),
                     ((Number) a.get("txFlagged")).longValue()
@@ -188,12 +145,8 @@ public class AdminUserController {
         return rows;
     }
 
-    // -------------------------------------------------------------------------
-    // UNLOCK ACCOUNT
-    // -------------------------------------------------------------------------
     @PutMapping("/{id}/unlock")
-    public Map<String, Object> unlock(@PathVariable Long id,
-                                      @RequestParam(required = false) String actorUsername) {
+    public Map<String, Object> unlock(@PathVariable Long id) {
         Map<String, Object> res = new HashMap<>();
         try {
             Optional<User> opt = userRepository.findById(id);
@@ -205,7 +158,6 @@ public class AdminUserController {
             User u = opt.get();
             u.setFailedAttempts(0);
             u.setLockoutUntil(null);
-            u.setLockoutLevel(0);
             userRepository.save(u);
             res.put("success", true);
             res.put("message", "Account unlocked: " + u.getUsername());
@@ -216,125 +168,113 @@ public class AdminUserController {
         return res;
     }
 
-    // -------------------------------------------------------------------------
-    // SUPER ADMIN ONLY — CREATE ADMIN
-    // -------------------------------------------------------------------------
+    /** SuperAdmin only — create ADMIN account */
     @PostMapping("/admins")
-    public ResponseEntity<?> createAdmin(@RequestBody Map<String, String> body,
-                                         @RequestParam String actorUsername) {
-        if (requireSuperAdmin(actorUsername).isEmpty()) {
-            return ResponseEntity.status(403)
-                    .body(Map.of("success", false, "message", "Only SuperAdmin can add admin accounts"));
-        }
+    public Map<String, Object> createAdmin(@RequestBody Map<String, String> body) {
+        Map<String, Object> res = new HashMap<>();
+        try {
+            String actorUsername = body.getOrDefault("actorUsername", "").trim();
+            User actor = requireActor(actorUsername);
+            if (!isSuper(actor)) {
+                res.put("success", false);
+                res.put("message", "Only SuperAdmin can add admin accounts");
+                return res;
+            }
 
-        String username = body.getOrDefault("username", "").trim();
-        String email = body.getOrDefault("email", "").trim().toLowerCase();
-        String password = body.getOrDefault("password", "");
-        String fullName = body.getOrDefault("fullName", "").trim();
+            String username = body.getOrDefault("username", "").trim();
+            String email = body.getOrDefault("email", "").trim().toLowerCase();
+            String password = body.getOrDefault("password", "");
+            String fullName = body.getOrDefault("fullName", "").trim();
 
-        if (username.length() < 4) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("success", false, "message", "Username must be at least 4 characters"));
-        }
-        if (userRepository.existsByUsername(username)) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("success", false, "message", "Username already taken"));
-        }
-        if (email.isEmpty() || !email.contains("@")) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("success", false, "message", "Valid email is required"));
-        }
-        if (userRepository.existsByEmail(email)) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("success", false, "message", "Email already registered"));
-        }
-        if (password.length() < 8) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("success", false, "message", "Password must be at least 8 characters"));
-        }
+            if (username.length() < 4) {
+                res.put("success", false);
+                res.put("message", "Username must be at least 4 characters");
+                return res;
+            }
+            if (userRepository.existsByUsername(username)) {
+                res.put("success", false);
+                res.put("message", "Username already taken");
+                return res;
+            }
+            if (email.isEmpty() || !email.contains("@")) {
+                res.put("success", false);
+                res.put("message", "Valid email required");
+                return res;
+            }
+            if (userRepository.existsByEmail(email)) {
+                res.put("success", false);
+                res.put("message", "Email already registered");
+                return res;
+            }
+            if (password.length() < 8) {
+                res.put("success", false);
+                res.put("message", "Password must be at least 8 characters");
+                return res;
+            }
 
-        User admin = new User();
-        admin.setUsername(username);
-        admin.setEmail(email);
-        admin.setFullName(fullName.isEmpty() ? username : fullName);
-        admin.setPassword(hashPassword(password));
-        admin.setRole("ADMIN");
-        admin.setAccountNumber("ADM" + (System.currentTimeMillis() % 1_000_000));
-        admin.setCreatedAt(LocalDateTime.now());
-        admin.setEmailVerified(true);
-        userRepository.save(admin);
+            User admin = new User();
+            admin.setUsername(username);
+            admin.setEmail(email);
+            admin.setFullName(fullName.isEmpty() ? username : fullName);
+            admin.setPassword(hashPassword(password));
+            admin.setRole("ADMIN");
+            admin.setAccountNumber("ADM" + (System.currentTimeMillis() % 1_000_000));
+            admin.setCreatedAt(LocalDateTime.now());
+            admin.setEmailVerified(true);
+            userRepository.save(admin);
 
-        return ResponseEntity.ok(Map.of(
-                "success", true,
-                "message", "Admin account created",
-                "id", admin.getId(),
-                "username", admin.getUsername(),
-                "email", admin.getEmail()
-        ));
+            res.put("success", true);
+            res.put("message", "Admin created: " + username);
+            res.put("id", admin.getId());
+        } catch (Exception e) {
+            res.put("success", false);
+            res.put("message", e.getMessage());
+        }
+        return res;
     }
 
-    // -------------------------------------------------------------------------
-    // SUPER ADMIN ONLY — REMOVE ADMIN
-    // -------------------------------------------------------------------------
+    /** SuperAdmin only — remove ADMIN (not SUPER_ADMIN, not USER) */
     @DeleteMapping("/admins/{id}")
-    public ResponseEntity<?> removeAdmin(@PathVariable Long id,
-                                         @RequestParam String actorUsername) {
-        if (requireSuperAdmin(actorUsername).isEmpty()) {
-            return ResponseEntity.status(403)
-                    .body(Map.of("success", false, "message", "Only SuperAdmin can remove admin accounts"));
+    public Map<String, Object> removeAdmin(@PathVariable Long id,
+                                           @RequestParam String actorUsername) {
+        Map<String, Object> res = new HashMap<>();
+        try {
+            User actor = requireActor(actorUsername);
+            if (!isSuper(actor)) {
+                res.put("success", false);
+                res.put("message", "Only SuperAdmin can remove admin accounts");
+                return res;
+            }
+            Optional<User> opt = userRepository.findById(id);
+            if (opt.isEmpty()) {
+                res.put("success", false);
+                res.put("message", "User not found");
+                return res;
+            }
+            User target = opt.get();
+            if ("SUPER_ADMIN".equalsIgnoreCase(target.getRole())) {
+                res.put("success", false);
+                res.put("message", "Cannot remove SuperAdmin");
+                return res;
+            }
+            if (!"ADMIN".equalsIgnoreCase(target.getRole())) {
+                res.put("success", false);
+                res.put("message", "Target is not an admin account");
+                return res;
+            }
+            if (actor.getId() != null && actor.getId().equals(target.getId())) {
+                res.put("success", false);
+                res.put("message", "Cannot remove yourself");
+                return res;
+            }
+            String name = target.getUsername();
+            userRepository.delete(target);
+            res.put("success", true);
+            res.put("message", "Admin removed: " + name);
+        } catch (Exception e) {
+            res.put("success", false);
+            res.put("message", e.getMessage());
         }
-
-        Optional<User> opt = userRepository.findById(id);
-        if (opt.isEmpty()) {
-            return ResponseEntity.status(404)
-                    .body(Map.of("success", false, "message", "User not found"));
-        }
-
-        User target = opt.get();
-        String role = target.getRole() != null ? target.getRole().toUpperCase() : "";
-
-        if ("SUPER_ADMIN".equals(role)) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("success", false, "message", "Cannot remove SuperAdmin"));
-        }
-        if (!"ADMIN".equals(role)) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("success", false, "message", "Target is not an admin account"));
-        }
-
-        userRepository.delete(target);
-        return ResponseEntity.ok(Map.of(
-                "success", true,
-                "message", "Admin removed: " + target.getUsername()
-        ));
-    }
-
-    // -------------------------------------------------------------------------
-    // LIST ADMINS ONLY (for SuperAdmin panel)
-    // -------------------------------------------------------------------------
-    @GetMapping("/admins")
-    public ResponseEntity<?> listAdmins(@RequestParam String actorUsername) {
-        if (requireSuperAdmin(actorUsername).isEmpty()) {
-            return ResponseEntity.status(403)
-                    .body(Map.of("success", false, "message", "Only SuperAdmin can list admins"));
-        }
-
-        List<Map<String, Object>> rows = new ArrayList<>();
-        for (User u : userRepository.findAll()) {
-            if (u == null) continue;
-            String role = u.getRole() != null ? u.getRole().toUpperCase() : "";
-            if (!"ADMIN".equals(role) && !"SUPER_ADMIN".equals(role)) continue;
-
-            Map<String, Object> row = new LinkedHashMap<>();
-            row.put("id", u.getId());
-            row.put("username", u.getUsername());
-            row.put("email", u.getEmail());
-            row.put("fullName", u.getFullName());
-            row.put("role", u.getRole());
-            row.put("createdAt", u.getCreatedAt() != null ? u.getCreatedAt().toString() : null);
-            row.put("lastLoginAt", u.getLastLoginAt() != null ? u.getLastLoginAt().toString() : null);
-            rows.add(row);
-        }
-        return ResponseEntity.ok(rows);
+        return res;
     }
 }
