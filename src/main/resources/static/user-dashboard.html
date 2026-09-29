@@ -1,347 +1,744 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>My Account - BSN</title>
-    <style>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Customer Dashboard · BSN FDS</title>
+<style>
 @import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&display=swap');
+
 :root {
-    --bg: #e9eef5;
-    --surface: #ffffff;
-    --border: #c5d0de;
-    --text: #1a2332;
-    --muted: #5c6b7c;
-    --accent: #003366;
-    --accent-hover: #00244d;
-    --clay: #c4a35a;
-    --danger: #b42318;
-    --success: #0f6b4c;
-    --warn: #a67c2a;
-    --soft: #f4f7fb;
+  --bsn: #003366;
+  --bsn-deep: #00244d;
+  --bsn-soft: #e8eef6;
+  --gold: #c4a35a;
+  --bg: #eef2f7;
+  --surface: #ffffff;
+  --line: #cdd7e5;
+  --text: #1a2332;
+  --muted: #5c6b7c;
+  --danger: #b42318;
+  --danger-bg: #fdecea;
+  --success: #0f6b4c;
+  --success-bg: #e8f6ef;
+  --warn: #9a6b12;
+  --shadow: 0 10px 28px rgba(0, 38, 77, 0.07);
+  --radius: 4px;
 }
+
 body.dark {
-    --bg: #0b1a33;
-    --surface: #12233f;
-    --border: #2a3f5f;
-    --text: #e8eef6;
-    --muted: #9aadc2;
-    --accent: #6ea8e0;
-    --accent-hover: #8fbfec;
-    --clay: #d4b56a;
-    --danger: #f0a29a;
-    --success: #7dba9a;
-    --warn: #e0b45c;
-    --soft: #18304f;
+  --bg: #0b1a33;
+  --surface: #12233f;
+  --line: #2a3f5f;
+  --text: #e8eef6;
+  --muted: #9aadc2;
+  --bsn-soft: #18304f;
+  --shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
 }
-* { margin: 0; padding: 0; box-sizing: border-box; }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
 body {
-    background: var(--bg); color: var(--text);
-    font-family: 'Libre Franklin', system-ui, sans-serif; min-height: 100vh;
-    transition: background .25s, color .25s;
+  font-family: 'Libre Franklin', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.5;
 }
+
+/* NAV */
 .navbar {
-    background: #003366; color: #fff;
-    border-bottom: 1px solid rgba(255,255,255,.12);
-    padding: 14px 22px; display: flex; justify-content: space-between; align-items: center;
-    flex-wrap: wrap; gap: 10px;
+  background: var(--bsn);
+  color: #fff;
+  padding: 16px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 body.dark .navbar { background: #061224; }
-.navbar h2 { color: #fff; font-size: 16px; font-weight: 700; letter-spacing: .02em; }
-.nav-links { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-.nav-links a, .nav-links button {
-    color: #fff; text-decoration: none; background: transparent;
-    border: 1px solid rgba(255,255,255,.35); padding: 7px 12px; border-radius: 2px;
-    font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit;
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
-.nav-links a:hover, .nav-links button:hover { background: rgba(255,255,255,.12); }
-.logout-btn { background: rgba(180,35,24,.25) !important; border-color: rgba(240,180,174,.5) !important; }
-.user-info { color: rgba(255,255,255,.85); font-size: 13px; }
-.container { max-width: 1200px; margin: 0 auto; padding: 22px 16px 40px; }
-.header-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
-.header-row h1 { font-size: 22px; color: var(--accent); font-weight: 700; }
-body.dark .header-row h1 { color: #9ec5ea; }
-.live-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-.live-status { font-size: 12px; color: var(--muted); font-weight: 600; }
+.brand-mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.12);
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+.brand h2 {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+.brand span {
+  display: block;
+  font-size: 11px;
+  opacity: 0.75;
+  font-weight: 500;
+}
+
+.nav-links {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.nav-links .who {
+  font-size: 13px;
+  opacity: 0.9;
+  margin-right: 6px;
+}
+.nav-links a,
+.nav-links button {
+  color: #fff;
+  text-decoration: none;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.32);
+  padding: 8px 14px;
+  border-radius: 2px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.nav-links a:hover,
+.nav-links button:hover {
+  background: rgba(255,255,255,0.12);
+}
+.nav-links a.active {
+  background: #fff;
+  color: var(--bsn);
+  border-color: #fff;
+}
+.logout-btn {
+  border-color: rgba(240,180,174,0.55) !important;
+  background: rgba(180,35,24,0.22) !important;
+}
+
+/* PAGE */
+.page {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 32px 22px 48px;
+}
+
+/* HERO */
+.hero {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 28px 28px 24px;
+  margin-bottom: 24px;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 24px;
+  align-items: center;
+}
+@media (max-width: 820px) {
+  .hero { grid-template-columns: 1fr; }
+}
+
+.hero h1 {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--bsn);
+  letter-spacing: -0.01em;
+  margin-bottom: 8px;
+}
+body.dark .hero h1 { color: #9ec5ea; }
+
+.hero .sub {
+  color: var(--muted);
+  font-size: 14px;
+}
+.account-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  background: var(--bsn-soft);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--bsn);
+}
+body.dark .account-chip { color: #cfe0f5; }
+.account-chip small {
+  font-weight: 500;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 11px;
+}
+
+.hero-side {
+  background: linear-gradient(145deg, var(--bsn) 0%, var(--bsn-deep) 100%);
+  color: #fff;
+  border-radius: var(--radius);
+  padding: 20px 18px;
+  min-height: 120px;
+}
+.hero-side h3 {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.8;
+  margin-bottom: 8px;
+}
+.hero-side p {
+  font-size: 14px;
+  line-height: 1.55;
+  opacity: 0.95;
+}
+
+/* TOOLBAR */
+.toolbar {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px 22px;
+  margin-bottom: 24px;
+}
+.toolbar-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.toolbar-top h2 {
+  font-size: 16px;
+  color: var(--bsn);
+  font-weight: 700;
+}
+body.dark .toolbar-top h2 { color: #9ec5ea; }
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--bsn-soft);
+  color: var(--muted);
+  border: 1px solid var(--line);
+}
+.pill.on {
+  background: var(--success-bg);
+  color: var(--success);
+  border-color: #b7e0cc;
+}
+.pill::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.8;
+}
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
 .btn {
-    border: 1px solid var(--border); background: var(--surface); color: var(--text);
-    padding: 8px 14px; border-radius: 2px; font-size: 13px; font-weight: 600;
-    cursor: pointer; font-family: inherit;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--text);
+  padding: 11px 16px;
+  border-radius: 2px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
 }
 .btn:hover { filter: brightness(0.98); }
-.btn-start { background: var(--accent); color: #fff; border-color: var(--accent); }
-.btn-stop { background: var(--danger); color: #fff; border-color: var(--danger); }
-.btn-upload { background: var(--accent); color: #fff; border-color: var(--accent); }
-.cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 14px 0 18px; }
-@media (max-width: 900px) { .cards { grid-template-columns: repeat(2, 1fr); } }
-.card {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 2px; padding: 14px 16px;
+.btn-primary {
+  background: var(--bsn);
+  color: #fff;
+  border-color: var(--bsn);
 }
-.card h3 { font-size: 12px; color: var(--muted); font-weight: 600; margin-bottom: 6px; }
-.card .number { font-size: 26px; font-weight: 700; color: var(--accent); }
-.card.suspicious .number { color: var(--danger); }
-.card.normal .number { color: var(--success); }
-.card.false-positive .number { color: var(--warn); }
-.main-grid { display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: 14px; }
-@media (max-width: 1000px) { .main-grid { grid-template-columns: 1fr; } }
+.btn-primary:hover { background: var(--bsn-deep); }
+.btn-danger {
+  background: var(--danger);
+  color: #fff;
+  border-color: var(--danger);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--bsn);
+  border-color: var(--line);
+}
+body.dark .btn-ghost { color: #9ec5ea; }
+
+.links-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 4px;
+}
+.links-row a {
+  color: var(--bsn);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+body.dark .links-row a { color: #9ec5ea; }
+.links-row a:hover { text-decoration: underline; }
+
+.demo-msg {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 2px;
+  background: var(--bsn-soft);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 13px;
+  min-height: 44px;
+}
+
+/* STATS */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+@media (max-width: 900px) {
+  .stats { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 520px) {
+  .stats { grid-template-columns: 1fr; }
+}
+
+.stat {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px 18px 18px;
+  min-height: 118px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.stat .label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.stat .value {
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--bsn);
+  letter-spacing: -0.02em;
+  margin-top: 10px;
+}
+body.dark .stat .value { color: #9ec5ea; }
+.stat.flagged .value { color: var(--danger); }
+.stat.ok .value { color: var(--success); }
+
+/* PANEL */
 .panel {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 2px; overflow: hidden;
-    display: flex; flex-direction: column; min-height: 280px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
 }
-.panel-header {
-    padding: 12px 14px; border-bottom: 1px solid var(--border);
-    font-size: 13px; font-weight: 700; color: var(--accent);
-    display: flex; justify-content: space-between; align-items: center;
+.panel-head {
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
-.panel-body { padding: 12px 14px; overflow: auto; max-height: 420px; flex: 1; }
-.empty { color: var(--muted); font-size: 13px; text-align: center; padding: 28px 10px; line-height: 1.5; }
-.upload-box { padding: 12px 14px; border-bottom: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-.upload-msg { font-size: 12px; color: var(--muted); width: 100%; }
-.feed-item {
-    border: 1px solid var(--border); border-radius: 2px; padding: 10px; margin-bottom: 8px;
-    background: var(--soft); cursor: pointer; font-size: 13px;
+.panel-head h2 {
+  font-size: 16px;
+  color: var(--bsn);
+  font-weight: 700;
 }
-.feed-item .row { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
-.feed-item .acc { font-weight: 700; color: var(--accent); }
-.feed-item .amt { font-weight: 600; }
-.status-line { font-size: 12px; font-weight: 700; margin-top: 4px; }
-.status-line.flagged { color: var(--danger); }
-.status-line.cleared { color: var(--success); }
-.status-line.processing { color: var(--warn); }
-.reason { font-size: 12px; color: var(--muted); margin-top: 4px; }
+body.dark .panel-head h2 { color: #9ec5ea; }
+.panel-body {
+  padding: 8px 0 4px;
+  overflow-x: auto;
+}
 
-.hero { background: var(--surface); border: 1px solid var(--border); border-radius: 2px; padding: 18px; margin-bottom: 14px; }
-.hero h1 { font-size: 22px; color: var(--accent); }
-.actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.empty {
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+  padding: 48px 20px;
+  line-height: 1.6;
+}
 
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+th, td {
+  padding: 14px 18px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+th {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  background: var(--bsn-soft);
+  font-weight: 700;
+}
+tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: rgba(0, 51, 102, 0.03); }
+body.dark tbody tr:hover { background: rgba(255,255,255,0.03); }
+
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 2px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+.badge.cleared {
+  background: var(--success-bg);
+  color: var(--success);
+}
+.badge.flagged {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+.badge.fp {
+  background: #fff6e5;
+  color: var(--warn);
+}
+
+.foot-actions {
+  margin-top: 18px;
+  display: flex;
+  justify-content: flex-end;
+}
+.btn-clear {
+  background: transparent;
+  border: 1px solid #f0b4ae;
+  color: var(--danger);
+  padding: 9px 14px;
+  border-radius: 2px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
 </style>
 </head>
 <body>
-    <div class="navbar">
-        <h2>BSN</h2>
-        <div class="nav-links">
-            <span id="userName">Customer</span>
-            <a href="user-dashboard.html">Dashboard</a>
-            <a href="user-transactions.html">My Transactions</a>
-            <a href="user-alerts.html">Alerts</a>
-            <a href="user-report.html">Report</a>
-            <button type="button" onclick="toggleTheme()" id="themeBtn">Dark Mode</button>
-            <button class="logout-btn" onclick="logout()">Logout</button>
-        </div>
+  <div class="navbar">
+    <div class="brand">
+      <div class="brand-mark">BSN</div>
+      <div>
+        <h2>BSN Fraud Detection</h2>
+        <span>Customer Portal</span>
+      </div>
     </div>
+    <div class="nav-links">
+      <span class="who" id="userName">Customer</span>
+      <a class="active" href="user-dashboard.html">Dashboard</a>
+      <a href="user-transactions.html">My Transactions</a>
+      <a href="user-alerts.html">Alerts</a>
+      <a href="user-report.html">Report</a>
+      <button type="button" id="themeBtn" onclick="toggleTheme()">Dark Mode</button>
+      <button type="button" class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </div>
 
-    <div class="container">
+  <div class="page">
+    <section class="hero">
+      <div>
         <h1>Welcome, <span id="welcomeName">Customer</span></h1>
-        <p class="sub">Account: <strong id="accountNumber">-</strong></p>
-
-        <div class="actions">
-            <button class="demo-btn" id="startDemoBtn" onclick="startUserLiveDemo()">Start Live Demo</button>
-            <button class="stop-btn" id="stopDemoBtn" onclick="stopUserLiveDemo()" style="display:none;">Stop Live Demo</button>
-            <button class="demo-btn" id="onceBtn" onclick="runDemoTransactionOnce()" style="background:var(--accent)!important;">Single Transaction</button>
-            <span class="live-pill" id="livePill">Live Demo: Off</span>
-            <a href="user-transactions.html">View All Transactions</a>
-            <a href="user-alerts.html">Risk Alerts</a>
-            <a class="secondary" href="user-report.html">Report Suspicious Activity</a>
+        <p class="sub">Monitor your account activity and review risk checks in real time.</p>
+        <div class="account-chip">
+          <small>Account</small>
+          <span id="accountNumber">—</span>
         </div>
-        <div class="demo-msg" id="demoMsg">Press Start Live Demo to auto-generate transactions for your account every few seconds.</div>
+      </div>
+      <div class="hero-side">
+        <h3>Protection status</h3>
+        <p>Hybrid rule-based and ML screening is active on every transaction linked to your account.</p>
+      </div>
+    </section>
 
-        <div class="cards">
-            <div class="card"><h3>My Transactions</h3><div class="number" id="totalCount">0</div></div>
-            <div class="card"><h3>Cleared</h3><div class="number" id="normalCount">0</div></div>
-            <div class="card warn"><h3>Flagged Alerts</h3><div class="number" id="suspiciousCount">0</div></div>
-            <div class="card"><h3>Total Spent (RM)</h3><div class="number" id="spentTotal">0</div></div>
-        </div>
+    <section class="toolbar">
+      <div class="toolbar-top">
+        <h2>Demo controls</h2>
+        <span class="pill" id="livePill">Live Demo: Off</span>
+      </div>
 
-        <div class="panel">
-            <h2>Recent Activity</h2>
-            <div id="recentList"><div class="empty">Loading...</div></div>
-        </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="startDemoBtn" type="button" onclick="startUserLiveDemo()">Start Live Demo</button>
+        <button class="btn btn-danger" id="stopDemoBtn" type="button" onclick="stopUserLiveDemo()" style="display:none;">Stop Live Demo</button>
+        <button class="btn btn-ghost" id="onceBtn" type="button" onclick="runDemoTransactionOnce()">Single Transaction</button>
+      </div>
+
+      <div class="links-row">
+        <a href="user-transactions.html">View all transactions</a>
+        <a href="user-alerts.html">Risk alerts</a>
+        <a href="user-report.html">Report suspicious activity</a>
+      </div>
+
+      <div class="demo-msg" id="demoMsg">
+        Press <strong>Start Live Demo</strong> to auto-generate transactions for your account, or run a <strong>Single Transaction</strong>.
+      </div>
+    </section>
+
+    <section class="stats">
+      <div class="stat">
+        <div class="label">My Transactions</div>
+        <div class="value" id="totalCount">0</div>
+      </div>
+      <div class="stat ok">
+        <div class="label">Cleared</div>
+        <div class="value" id="normalCount">0</div>
+      </div>
+      <div class="stat flagged">
+        <div class="label">Flagged Alerts</div>
+        <div class="value" id="suspiciousCount">0</div>
+      </div>
+      <div class="stat">
+        <div class="label">Total Spent (RM)</div>
+        <div class="value" id="spentTotal">0.00</div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Recent activity</h2>
+        <span style="font-size:12px;color:var(--muted);font-weight:600;">Latest 8 transactions</span>
+      </div>
+      <div class="panel-body" id="recentList">
+        <div class="empty">Loading…</div>
+      </div>
+    </section>
+
+    <div class="foot-actions">
+      <button class="btn-clear" type="button" onclick="clearMyData()">Clear my transaction history</button>
     </div>
+  </div>
 
-    <script>
-        if (sessionStorage.getItem("isLoggedIn") !== "true" || sessionStorage.getItem("role") !== "USER") {
-            window.location.href = "access.html";
-        }
-
-        const fullName = sessionStorage.getItem("fullName") || "Customer";
-        const accountNumber = sessionStorage.getItem("accountNumber") || "";
-        document.getElementById("userName").textContent = fullName;
-        document.getElementById("welcomeName").textContent = fullName;
-        document.getElementById("accountNumber").textContent = accountNumber || "Not assigned";
-
-        function applyTheme() {
-            const dark = localStorage.getItem("theme") === "dark";
-            document.body.classList.toggle("dark", dark);
-            document.getElementById("themeBtn").textContent = dark ? "Light Mode" : "Dark Mode";
-        }
-        function toggleTheme() {
-            localStorage.setItem("theme", document.body.classList.contains("dark") ? "light" : "dark");
-            applyTheme();
-        }
-        applyTheme();
-
-        function logout() {
-            stopUserLiveDemo();
-            sessionStorage.clear();
-            window.location.href = "access.html";
-        }
-
-        let userLiveInterval = null;
-
-        function setLiveUi(on) {
-            document.getElementById("startDemoBtn").style.display = on ? "none" : "inline-block";
-            document.getElementById("stopDemoBtn").style.display = on ? "inline-block" : "none";
-            const pill = document.getElementById("livePill");
-            pill.textContent = on ? "Live Demo: Running" : "Live Demo: Off";
-            pill.classList.toggle("on", on);
-        }
-
-        async function runDemoTransactionOnce() {
-            const msg = document.getElementById("demoMsg");
-            if (!accountNumber) {
-                msg.style.color = "var(--danger)";
-                msg.textContent = "No account number found. Please re-register as USER.";
-                return;
-            }
-
-            // Mostly normal, sometimes risky — matches backend philosophy
-            const samples = [
-                { amount: 35.50, type: "PAYMENT", location: "Kuala Lumpur" },
-                { amount: 89.00, type: "PAYMENT", location: "Shah Alam" },
-                { amount: 120.50, type: "PAYMENT", location: "Penang" },
-                { amount: 250.00, type: "WITHDRAWAL", location: "Johor Bahru" },
-                { amount: 450.00, type: "TRANSFER", location: "Ipoh" },
-                { amount: 780.00, type: "PAYMENT", location: "Melaka" },
-                { amount: 9800.00, type: "TRANSFER", location: "Overseas" },
-                { amount: 15000.00, type: "TRANSFER", location: "Unknown" }
-            ];
-            // Prefer normal samples (~80%)
-            const pick = Math.random() < 0.8
-                ? samples[Math.floor(Math.random() * 6)]
-                : samples[6 + Math.floor(Math.random() * 2)];
-
-            msg.style.color = "var(--muted)";
-            msg.textContent = "Processing transaction for your account...";
-
-            try {
-                const res = await fetch("https://fraud-detection-system-j4bg.onrender.com/api/transactions/check", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        accountNumber: accountNumber,
-                        amount: pick.amount,
-                        transactionType: pick.type,
-                        location: pick.location
-                    })
-                });
-                const tx = await res.json();
-                const flagged = tx.status === "SUSPICIOUS";
-                msg.style.color = flagged ? "var(--danger)" : "var(--success)";
-                msg.textContent = `Latest: ${flagged ? "FLAGGED" : "CLEARED"} · Risk ${tx.riskScore}% · RM ${Number(tx.amount).toFixed(2)} (${pick.location})`;
-                loadUserData();
-            } catch (e) {
-                msg.style.color = "var(--danger)";
-                msg.textContent = "Server offline. Start Spring Boot first.";
-            }
-        }
-
-        function startUserLiveDemo() {
-            if (userLiveInterval) return;
-            if (!accountNumber) {
-                document.getElementById("demoMsg").style.color = "var(--danger)";
-                document.getElementById("demoMsg").textContent = "No account number found. Please re-register as USER.";
-                return;
-            }
-            setLiveUi(true);
-            runDemoTransactionOnce();
-            userLiveInterval = setInterval(runDemoTransactionOnce, 3500);
-        }
-
-        function stopUserLiveDemo() {
-            if (userLiveInterval) {
-                clearInterval(userLiveInterval);
-                userLiveInterval = null;
-            }
-            setLiveUi(false);
-            document.getElementById("demoMsg").style.color = "var(--muted)";
-            document.getElementById("demoMsg").textContent = "Live demo stopped.";
-        }
-
-        async function loadUserData() {
-            try {
-                const res = await fetch("https://fraud-detection-system-j4bg.onrender.com/api/transactions/my-history?accountNumber=" + encodeURIComponent(accountNumber));
-                const all = await res.json();
-                const mine = accountNumber
-                    ? all.filter(t => String(t.accountNumber) === String(accountNumber))
-                    : [];
-
-                document.getElementById("totalCount").textContent = mine.length;
-                document.getElementById("normalCount").textContent =
-                    mine.filter(t => t.status === "NORMAL" && !t.falsePositive).length;
-                document.getElementById("suspiciousCount").textContent =
-                    mine.filter(t => t.status === "SUSPICIOUS" && !t.falsePositive).length;
-                document.getElementById("spentTotal").textContent =
-                    mine.reduce((s, t) => s + (Number(t.amount) || 0), 0).toFixed(2);
-
-                const recent = [...mine].reverse().slice(0, 8);
-                if (recent.length === 0) {
-                    document.getElementById("recentList").innerHTML =
-                        "<div class='empty'>No transactions yet. Press Start Live Demo.</div>";
-                    return;
-                }
-
-                let html = `<table><thead><tr>
-                    <th>Amount</th><th>Type</th><th>Location</th><th>Risk</th><th>Status</th><th>Time</th>
-                </tr></thead><tbody>`;
-
-                recent.forEach(tx => {
-                    const statusClass = tx.status === "SUSPICIOUS" && !tx.falsePositive
-                        ? "status-suspicious" : "status-normal";
-                    const statusText = tx.falsePositive
-                        ? "FALSE POSITIVE"
-                        : (tx.status === "SUSPICIOUS" ? "FLAGGED" : "CLEARED");
-                    html += `<tr>
-                        <td>RM ${Number(tx.amount).toFixed(2)}</td>
-                        <td>${tx.transactionType}</td>
-                        <td>${tx.location}</td>
-                        <td>${tx.riskScore}%</td>
-                        <td class="${statusClass}">${statusText}</td>
-                        <td>${tx.timestamp ? tx.timestamp.replace("T", " ").substring(0, 19) : "-"}</td>
-                    </tr>`;
-                });
-                html += `</tbody></table>`;
-                document.getElementById("recentList").innerHTML = html;
-            } catch (e) {
-                document.getElementById("recentList").innerHTML =
-                    "<div class='empty'>Could not load data.</div>";
-            }
-        }
-
-        // Stop live demo if user leaves the page
-        window.addEventListener("beforeunload", stopUserLiveDemo);
-
-        loadUserData();
-
-        async function clearMyData() {
-    if (!accountNumber) {
-        alert("No account number found.");
-        return;
-    }
-    if (!confirm("Delete all transactions for account " + accountNumber + "?")) return;
-    stopUserLiveDemo();
-    try {
-        const res = await fetch(
-            "https://fraud-detection-system-j4bg.onrender.com/api/transactions/clear-mine?accountNumber=" + encodeURIComponent(accountNumber),
-            { method: "DELETE" }
-        );
-        const data = await res.json();
-        alert(data.message);
-        document.getElementById("demoMsg").textContent = "Your transaction history was cleared.";
-        loadUserData();
-    } catch (e) {
-        alert("Failed to clear data.");
-    }
+<script>
+if (sessionStorage.getItem("isLoggedIn") !== "true" || sessionStorage.getItem("role") !== "USER") {
+  window.location.href = "access.html";
 }
-    </script>
+
+const API = "https://fraud-detection-system-j4bg.onrender.com";
+const fullName = sessionStorage.getItem("fullName") || "Customer";
+const accountNumber = sessionStorage.getItem("accountNumber") || "";
+
+document.getElementById("userName").textContent = fullName;
+document.getElementById("welcomeName").textContent = fullName;
+document.getElementById("accountNumber").textContent = accountNumber || "Not assigned";
+
+function applyTheme() {
+  const dark = localStorage.getItem("theme") === "dark";
+  document.body.classList.toggle("dark", dark);
+  document.getElementById("themeBtn").textContent = dark ? "Light Mode" : "Dark Mode";
+}
+function toggleTheme() {
+  localStorage.setItem("theme", document.body.classList.contains("dark") ? "light" : "dark");
+  applyTheme();
+}
+applyTheme();
+
+function logout() {
+  stopUserLiveDemo();
+  sessionStorage.clear();
+  window.location.href = "access.html";
+}
+
+let userLiveInterval = null;
+
+function setLiveUi(on) {
+  document.getElementById("startDemoBtn").style.display = on ? "none" : "inline-block";
+  document.getElementById("stopDemoBtn").style.display = on ? "inline-block" : "none";
+  const pill = document.getElementById("livePill");
+  pill.textContent = on ? "Live Demo: Running" : "Live Demo: Off";
+  pill.classList.toggle("on", on);
+}
+
+async function runDemoTransactionOnce() {
+  const msg = document.getElementById("demoMsg");
+  if (!accountNumber) {
+    msg.style.color = "var(--danger)";
+    msg.textContent = "No account number found. Please re-register as a customer.";
+    return;
+  }
+
+  const samples = [
+    { amount: 35.50, type: "PAYMENT", location: "Kuala Lumpur" },
+    { amount: 89.00, type: "PAYMENT", location: "Shah Alam" },
+    { amount: 120.50, type: "PAYMENT", location: "Penang" },
+    { amount: 250.00, type: "WITHDRAWAL", location: "Johor Bahru" },
+    { amount: 450.00, type: "TRANSFER", location: "Ipoh" },
+    { amount: 780.00, type: "PAYMENT", location: "Melaka" },
+    { amount: 9800.00, type: "TRANSFER", location: "Overseas" },
+    { amount: 15000.00, type: "TRANSFER", location: "Unknown" }
+  ];
+  const pick = Math.random() < 0.8
+    ? samples[Math.floor(Math.random() * 6)]
+    : samples[6 + Math.floor(Math.random() * 2)];
+
+  msg.style.color = "var(--muted)";
+  msg.textContent = "Processing transaction for your account…";
+
+  try {
+    const res = await fetch(API + "/api/transactions/check", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        accountNumber: accountNumber,
+        amount: pick.amount,
+        transactionType: pick.type,
+        location: pick.location
+      })
+    });
+    const tx = await res.json();
+    const flagged = tx.status === "SUSPICIOUS";
+    msg.style.color = flagged ? "var(--danger)" : "var(--success)";
+    msg.textContent = "Latest: " + (flagged ? "FLAGGED" : "CLEARED") +
+      " · Risk " + tx.riskScore + "% · RM " + Number(tx.amount).toFixed(2) +
+      " (" + pick.location + ")";
+    loadUserData();
+  } catch (e) {
+    msg.style.color = "var(--danger)";
+    msg.textContent = "Server offline or waking up. Wait a moment and try again.";
+  }
+}
+
+function startUserLiveDemo() {
+  if (userLiveInterval) return;
+  if (!accountNumber) {
+    document.getElementById("demoMsg").style.color = "var(--danger)";
+    document.getElementById("demoMsg").textContent = "No account number found. Please re-register as a customer.";
+    return;
+  }
+  setLiveUi(true);
+  runDemoTransactionOnce();
+  userLiveInterval = setInterval(runDemoTransactionOnce, 3500);
+}
+
+function stopUserLiveDemo() {
+  if (userLiveInterval) {
+    clearInterval(userLiveInterval);
+    userLiveInterval = null;
+  }
+  setLiveUi(false);
+  const msg = document.getElementById("demoMsg");
+  msg.style.color = "var(--muted)";
+  msg.textContent = "Live demo stopped. Use Single Transaction or Start Live Demo again.";
+}
+
+async function loadUserData() {
+  try {
+    const res = await fetch(API + "/api/transactions/my-history?accountNumber=" + encodeURIComponent(accountNumber));
+    const all = await res.json();
+    const mine = accountNumber
+      ? all.filter(t => String(t.accountNumber) === String(accountNumber))
+      : [];
+
+    document.getElementById("totalCount").textContent = mine.length;
+    document.getElementById("normalCount").textContent =
+      mine.filter(t => t.status === "NORMAL" && !t.falsePositive).length;
+    document.getElementById("suspiciousCount").textContent =
+      mine.filter(t => t.status === "SUSPICIOUS" && !t.falsePositive).length;
+    document.getElementById("spentTotal").textContent =
+      mine.reduce((s, t) => s + (Number(t.amount) || 0), 0).toFixed(2);
+
+    const recent = [...mine].reverse().slice(0, 8);
+    if (recent.length === 0) {
+      document.getElementById("recentList").innerHTML =
+        "<div class='empty'>No transactions yet.<br>Press <strong>Start Live Demo</strong> or <strong>Single Transaction</strong>.</div>";
+      return;
+    }
+
+    let html = "<table><thead><tr>" +
+      "<th>Amount</th><th>Type</th><th>Location</th><th>Risk</th><th>Status</th><th>Time</th>" +
+      "</tr></thead><tbody>";
+
+    recent.forEach(tx => {
+      let statusClass = "badge cleared";
+      let statusText = "CLEARED";
+      if (tx.falsePositive) {
+        statusClass = "badge fp";
+        statusText = "FALSE POSITIVE";
+      } else if (tx.status === "SUSPICIOUS") {
+        statusClass = "badge flagged";
+        statusText = "FLAGGED";
+      }
+      html += "<tr>" +
+        "<td><strong>RM " + Number(tx.amount).toFixed(2) + "</strong></td>" +
+        "<td>" + (tx.transactionType || "—") + "</td>" +
+        "<td>" + (tx.location || "—") + "</td>" +
+        "<td>" + (tx.riskScore != null ? tx.riskScore + "%" : "—") + "</td>" +
+        "<td><span class='" + statusClass + "'>" + statusText + "</span></td>" +
+        "<td>" + (tx.timestamp ? String(tx.timestamp).replace("T", " ").substring(0, 19) : "—") + "</td>" +
+        "</tr>";
+    });
+    html += "</tbody></table>";
+    document.getElementById("recentList").innerHTML = html;
+  } catch (e) {
+    document.getElementById("recentList").innerHTML =
+      "<div class='empty'>Could not load data. Server may be waking up.</div>";
+  }
+}
+
+async function clearMyData() {
+  if (!accountNumber) {
+    alert("No account number found.");
+    return;
+  }
+  if (!confirm("Delete all transactions for account " + accountNumber + "?")) return;
+  stopUserLiveDemo();
+  try {
+    const res = await fetch(
+      API + "/api/transactions/clear-mine?accountNumber=" + encodeURIComponent(accountNumber),
+      { method: "DELETE" }
+    );
+    const data = await res.json();
+    alert(data.message || "Cleared");
+    document.getElementById("demoMsg").textContent = "Your transaction history was cleared.";
+    loadUserData();
+  } catch (e) {
+    alert("Failed to clear data.");
+  }
+}
+
+window.addEventListener("beforeunload", stopUserLiveDemo);
+loadUserData();
+</script>
 </body>
 </html>
