@@ -24,6 +24,9 @@ public class FraudDetectionService {
     @Autowired
     private IsolationForestService isolationForestService;
 
+    @Autowired
+    private AlertEmailService alertEmailService;
+
     public Transaction checkTransaction(Transaction transaction) {
         int velocityScore = 0;
         int amountScore = 0;
@@ -334,7 +337,16 @@ public class FraudDetectionService {
         transaction.setRiskLevel(riskLevel);
         transaction.setTimestamp(now);
         transaction.setReasons(reasons);
-        return transactionRepository.save(transaction);
+
+        Transaction saved = transactionRepository.save(transaction);
+        try {
+            if ("SUSPICIOUS".equalsIgnoreCase(saved.getStatus())) {
+                alertEmailService.sendFraudAlert(saved);
+            }
+        } catch (Exception e) {
+            System.out.println("[ALERT] Failed to send email: " + e.getMessage());
+        }
+        return saved;
     }
 
     public List<Transaction> getAllTransactions() {

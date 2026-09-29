@@ -183,6 +183,7 @@ $("loginForm").onsubmit=async(e)=>{
       await loadCaptcha();
       return;
     }
+    sessionStorage.setItem("isLoggedIn", "true");
     sessionStorage.setItem("username", data.username);
     sessionStorage.setItem("role", data.role||"USER");
     sessionStorage.setItem("accountNumber", data.accountNumber||"");

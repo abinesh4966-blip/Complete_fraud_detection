@@ -287,6 +287,7 @@ $("form").addEventListener("submit", async (e)=>{
       return;
     }
     showMsg("Registration successful. Redirecting…", false);
+    sessionStorage.setItem("isLoggedIn", "true");
     sessionStorage.setItem("username", data.username);
     sessionStorage.setItem("role", data.role || "USER");
     sessionStorage.setItem("accountNumber", data.accountNumber || "");
