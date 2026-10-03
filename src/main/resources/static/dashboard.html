@@ -3,675 +3,311 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Admin Dashboard · BSN FDS</title>
+<title>Dashboard · BSN FDS</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="css/app-shell.css">
+<link rel="stylesheet" href="css/theme-dark.css">
+<link rel="stylesheet" href="css/page-transitions.css">
+<script>(function(){try{if(localStorage.getItem("theme")==="dark")document.documentElement.classList.add("dark");}catch(e){}})();</script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&display=swap');
 :root{
-  --bsn:#003366; --bsn-deep:#00244d; --bsn-soft:#e8eef6; --gold:#c4a35a;
-  --bg:#eef2f7; --surface:#ffffff; --line:#cdd7e5; --text:#1a2332; --muted:#5c6b7c;
-  --danger:#b42318; --danger-bg:#fdecea; --success:#0f6b4c; --success-bg:#e8f6ef;
-  --warn:#9a6b12; --shadow:0 10px 28px rgba(0,38,77,.07); --radius:4px;
-}
-body.dark{
-  --bg:#0b1a33; --surface:#12233f; --line:#2a3f5f; --text:#e8eef6; --muted:#9aadc2;
-  --bsn-soft:#18304f; --shadow:0 10px 28px rgba(0,0,0,.35);
+  --bsn:#003366; --bsn-deep:#00244d; --bsn-soft:#e8eef6;
+  --bg:#eef2f7; --surface:#fff; --line:#cdd7e5; --text:#1a2332; --muted:#5c6b7c;
+  --danger:#b42318; --success:#0f6b4c; --shadow:0 10px 28px rgba(0,38,77,.08);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Libre Franklin',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5}
-.navbar{background:var(--bsn);color:#fff;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
-body.dark .navbar{background:#061224}
-.brand{display:flex;align-items:center;gap:12px}
-.brand-mark{width:36px;height:36px;border-radius:2px;background:rgba(255,255,255,.12);display:grid;place-items:center;font-weight:700;font-size:12px}
-.brand h2{font-size:16px;font-weight:700}
-.brand span{display:block;font-size:11px;opacity:.75;font-weight:500}
-.nav-links{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.nav-links .who{font-size:13px;opacity:.9;margin-right:4px}
-.nav-links a,.nav-links button{color:#fff;text-decoration:none;background:transparent;border:1px solid rgba(255,255,255,.32);padding:8px 12px;border-radius:2px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
-.nav-links a:hover,.nav-links button:hover{background:rgba(255,255,255,.12)}
-.nav-links a.active{background:#fff;color:var(--bsn);border-color:#fff}
-.logout-btn{border-color:rgba(240,180,174,.55)!important;background:rgba(180,35,24,.22)!important}
-.page{max-width:1180px;margin:0 auto;padding:28px 20px 48px}
-.page-title{margin-bottom:20px}
-.page-title h1{font-size:24px;color:var(--bsn);font-weight:700;margin-bottom:6px}
-body.dark .page-title h1{color:#9ec5ea}
-.page-title p{color:var(--muted);font-size:14px}
-.card,.panel,.toolbar,.stat{
-  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)
-}
-.toolbar{padding:18px 20px;margin-bottom:20px}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
-@media(max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:520px){.stats{grid-template-columns:1fr}}
-.stat{padding:18px 16px;min-height:110px;display:flex;flex-direction:column;justify-content:space-between}
-.stat .label{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
-.stat .value{font-size:28px;font-weight:700;color:var(--bsn);margin-top:10px}
-body.dark .stat .value{color:#9ec5ea}
-.stat.flag .value{color:var(--danger)}
-.stat.ok .value{color:var(--success)}
-.panel{overflow:hidden;margin-bottom:18px}
-.panel-head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-.panel-head h2{font-size:15px;color:var(--bsn);font-weight:700}
-body.dark .panel-head h2{color:#9ec5ea}
-.panel-body{padding:14px 16px}
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.grid-3{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:16px}
-@media(max-width:1000px){.grid-2,.grid-3{grid-template-columns:1fr}}
-.btn{border:1px solid var(--line);background:var(--surface);color:var(--text);padding:10px 14px;border-radius:2px;font:inherit;font-size:13px;font-weight:700;cursor:pointer}
-.btn-primary{background:var(--bsn);color:#fff;border-color:var(--bsn)}
+body{font-family:'Libre Franklin',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+h1{font-size:22px;color:var(--bsn);margin-bottom:6px}
+.sub{color:var(--muted);font-size:14px;margin-bottom:18px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:16px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:14px;box-shadow:var(--shadow)}
+.stat .label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase}
+.stat .value{font-size:22px;font-weight:700;color:var(--bsn);margin-top:6px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:4px;box-shadow:var(--shadow);margin-bottom:14px}
+.ph{padding:12px 16px;border-bottom:1px solid var(--line);font-weight:700;color:var(--bsn);font-size:14px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.pb{padding:16px}
+.btn{border:none;border-radius:2px;padding:10px 14px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;margin:4px 4px 4px 0}
+.btn-primary{background:var(--bsn);color:#fff}
 .btn-primary:hover{background:var(--bsn-deep)}
-.btn-danger{background:var(--danger);color:#fff;border-color:var(--danger)}
-.btn-ghost{background:transparent;color:var(--bsn)}
-.btn-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-.pill{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;font-size:12px;font-weight:700;background:var(--bsn-soft);color:var(--muted);border:1px solid var(--line)}
-.pill.on{background:var(--success-bg);color:var(--success);border-color:#b7e0cc}
-.empty{text-align:center;color:var(--muted);font-size:14px;padding:36px 16px;line-height:1.6}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle}
-th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);background:var(--bsn-soft);font-weight:700}
-label{display:block;font-size:12px;font-weight:600;color:var(--bsn);margin:0 0 6px}
-body.dark label{color:#9ec5ea}
-input,select,textarea{
-  width:100%;border:1px solid var(--line);border-radius:2px;padding:10px 12px;font:inherit;font-size:14px;
-  background:var(--surface);color:var(--text);margin-bottom:12px
-}
-.badge{display:inline-block;padding:4px 10px;border-radius:2px;font-size:11px;font-weight:700}
-.badge.cleared,.badge.NORMAL{background:var(--success-bg);color:var(--success)}
-.badge.flagged,.badge.SUSPICIOUS,.badge.ADMIN{background:var(--danger-bg);color:var(--danger)}
-.badge.SUPER_ADMIN{background:#fff6e5;color:var(--warn)}
-.badge.USER{background:var(--bsn-soft);color:var(--bsn)}
-.badge.LOCK{background:var(--danger-bg);color:var(--danger)}
-.feed-item{border:1px solid var(--line);border-radius:2px;padding:12px;margin-bottom:10px;background:var(--bsn-soft);cursor:pointer;font-size:13px}
-.feed-item .row{display:flex;justify-content:space-between;gap:8px;margin-bottom:4px}
-.msg{margin-top:10px;padding:10px 12px;border-radius:2px;font-size:13px}
-.msg.ok{background:var(--success-bg);color:var(--success);border:1px solid #b7e0cc}
-.msg.err{background:var(--danger-bg);color:var(--danger);border:1px solid #f0b4ae}
-.filters{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin-bottom:14px}
-.filters > div{min-width:140px}
-canvas{max-width:100%}
-
-.live-status{font-size:12px;font-weight:600;color:var(--muted)}
-.upload-box{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
-#liveFeed,#uploadFeed{max-height:380px;overflow:auto}
-
-/* Mobile-first operational polish */
-@media (max-width: 768px) {
-  .navbar { flex-direction: column; align-items: flex-start !important; }
-  .nav-links { width: 100%; }
-  .nav-links a, .nav-links button { flex: 1 1 auto; text-align: center; }
-  .stats, .policy, .grid-2, .grid-3 { grid-template-columns: 1fr !important; }
-  table { display: block; overflow-x: auto; white-space: nowrap; }
-  .page { padding: 16px 12px 40px !important; }
-  canvas { max-width: 100% !important; height: auto !important; }
-  input, select, textarea, button { font-size: 16px !important; } /* prevent iOS zoom */
-}
-
+.btn-danger{background:var(--danger);color:#fff}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--bsn)}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.status{font-size:12px;font-weight:700;color:var(--muted)}
+.status.active{color:var(--success)}
+.feed{max-height:320px;overflow:auto}
+.item{border:1px solid var(--line);border-radius:2px;padding:10px 12px;margin-bottom:8px;font-size:13px;cursor:pointer}
+.item.flagged{border-color:#f0b4ae;background:#fdecea}
+.item.pending{border-color:#f0d78c;background:#fff8e8}
+.item.cleared{border-color:#b7e0cc;background:#e8f6ef}
+.item .row{display:flex;justify-content:space-between;gap:8px;font-weight:700}
+.item .meta{font-size:12px;color:var(--muted);margin-top:4px}
+.charts{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:900px){.charts{grid-template-columns:1fr}}
+canvas{max-height:220px}
+.msg{font-size:13px;color:var(--muted);margin-top:8px}
+input[type=file]{font-size:13px}
 </style>
-<link rel="stylesheet" href="css/page-transitions.css">
-<script>(function(){try{if(localStorage.getItem("theme")==="dark")document.documentElement.classList.add("dark");}catch(e){}})();</script>
-<link rel="stylesheet" href="css/theme-dark.css">
-<script src="js/theme.js" defer></script>
-
-<link rel="stylesheet" href="css/app-shell.css">
-<script>(function(){try{if(localStorage.getItem("theme")==="dark")document.documentElement.classList.add("dark");}catch(e){}})();</script>
-<link rel="stylesheet" href="css/theme-dark.css">
 </head>
 <body>
-<div class="navbar">
-  <div class="brand"><div class="brand-mark">BSN</div><div><h2>BSN Fraud Detection</h2><span>Admin Control Centre</span></div></div>
-  <div class="nav-links">
-    <span class="who" id="userName">Admin</span>
-    <a class="active" href="dashboard.html">Dashboard</a>
-    <a href="admin-review.html">Case Review</a>
-    <a href="checker.html">Checker</a>
-    <a href="history.html">History</a>
-    <a href="admin-reports.html">Reports</a>
-    <a href="admin-users.html">Users</a>
-    <a href="profile.html">Profile</a>
-    <button type="button" id="themeBtn" data-theme-btn onclick="toggleTheme()">Dark Mode</button>
-    <button type="button" class="logout-btn" onclick="logout()">Logout</button>
+  <div class="wrap" style="max-width:1100px;margin:0 auto;padding:8px 0 40px">
+    <h1>Operations dashboard</h1>
+    <p class="sub">Live monitoring, portfolio stats, and case overview for BSN Fraud Detection.</p>
 
-  </div>
-</div>
-<div class="page">
-  <div class="page-title">
-    <h1>Fraud Control Centre</h1>
-    <p>Live monitoring, ML status, CSV verification, and threat overview.</p>
-  </div>
-
-  <div class="toolbar">
-    <div class="btn-row" style="justify-content:space-between">
-      <div class="btn-row">
-        <span class="live-status" id="liveStatus">Live Monitoring: Offline</span>
-        <span class="pill" id="liveCount">0 events</span>
-      </div>
-      <div class="btn-row">
-        <button class="btn btn-primary" id="startBtn" onclick="startLiveMonitoring()">Start Live</button>
-        <button class="btn btn-danger" id="stopBtn" onclick="stopLiveMonitoring()" style="display:none">Stop</button>
-        <button class="btn btn-danger" onclick="resetEntireSystem()">Reset system data</button>
-      </div>
+    <div class="stats">
+      <div class="stat"><div class="label">Total</div><div class="value" id="statTotal">0</div></div>
+      <div class="stat"><div class="label">Cleared</div><div class="value" id="statCleared">0</div></div>
+      <div class="stat"><div class="label">Pending review</div><div class="value" id="statPending">0</div></div>
+      <div class="stat"><div class="label">Flagged</div><div class="value" id="statFlagged">0</div></div>
     </div>
-  </div>
 
-  <div class="toolbar" id="mlStatusBox">
-    <div class="btn-row" style="justify-content:space-between">
-      <span id="mlStatusText">ML Status: loading…</span>
-      <div class="btn-row">
-        <button class="btn btn-primary" type="button" onclick="retrainMl()">Retrain ML</button>
-        <button class="btn" type="button" onclick="resetMlOnly()">Reset ML</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="stats">
-    <div class="stat"><div class="label">Total Transactions</div><div class="value" id="totalCount">0</div></div>
-    <div class="stat ok"><div class="label">Cleared</div><div class="value" id="normalCount">0</div></div>
-    <div class="stat flag"><div class="label">Flagged</div><div class="value" id="suspiciousCount">0</div></div>
-    <div class="stat"><div class="label">False Positive</div><div class="value" id="falsePositiveCount">0</div></div>
-  </div>
-
-  <div class="grid-3">
     <div class="panel">
-      <div class="panel-head"><h2>Threat distribution</h2></div>
-      <div class="panel-body" style="display:flex;flex-direction:column;gap:16px">
-        <canvas id="pieChart"></canvas>
-        <canvas id="barChart"></canvas>
+      <div class="ph">
+        <span>Live monitoring</span>
+        <span class="status" id="liveStatus">Offline</span>
+      </div>
+      <div class="pb">
+        <button type="button" class="btn btn-primary" id="btnStartLive">Start Live</button>
+        <button type="button" class="btn btn-danger" id="btnStopLive" style="display:none">Stop Live</button>
+        <button type="button" class="btn btn-ghost" id="btnRefresh">Refresh stats</button>
+        <p class="msg" id="liveMsg">Click Start Live to generate sample transactions through the detection engine.</p>
+        <div class="feed" id="liveFeed"><div class="msg">No live events yet.</div></div>
       </div>
     </div>
-    <div class="panel">
-      <div class="panel-head"><h2>Live feed</h2><span class="pill" id="liveCountSide">Live</span></div>
-      <div class="panel-body" id="liveFeed"><div class="empty">Waiting for live transactions…<br>Press Start Live to begin.</div></div>
-    </div>
-    <div class="panel">
-      <div class="panel-head"><h2>CSV verification</h2><span class="pill" id="uploadCount">0 processed</span></div>
-      <div class="panel-body">
-        <div class="upload-box">
-          <input type="file" id="csvFile" accept=".csv" style="margin:0;max-width:220px">
-          <button class="btn btn-primary" id="uploadBtn" onclick="startSequentialUpload()">Upload & Verify</button>
+
+    <div class="grid">
+      <div class="panel">
+        <div class="ph">Portfolio charts</div>
+        <div class="pb charts">
+          <canvas id="pieChart"></canvas>
+          <canvas id="barChart"></canvas>
         </div>
-        <div id="uploadMessage" class="msg" style="display:none"></div>
-        <div id="uploadFeed"><div class="empty">Upload a CSV to begin sequential verification.</div></div>
+      </div>
+      <div class="panel">
+        <div class="ph">Tools</div>
+        <div class="pb">
+          <button type="button" class="btn btn-primary" id="btnRetrain">Retrain ML</button>
+          <button type="button" class="btn btn-ghost" id="btnResetMl">Reset ML</button>
+          <button type="button" class="btn btn-danger" id="btnResetAll">Reset system data</button>
+          <p class="msg" id="toolMsg">ML status: —</p>
+          <hr style="border:none;border-top:1px solid var(--line);margin:14px 0">
+          <label style="font-size:12px;font-weight:700;color:var(--bsn)">CSV upload</label><br>
+          <input type="file" id="csvFile" accept=".csv,text/csv" style="margin:8px 0">
+          <button type="button" class="btn btn-primary" id="btnUpload">Upload & analyse</button>
+          <p class="msg" id="uploadMsg"></p>
+          <div class="feed" id="uploadFeed"></div>
+        </div>
       </div>
     </div>
   </div>
-</div>
+
+<script src="js/theme.js"></script>
+<script src="js/app-shell.js"></script>
+<script src="js/page-transitions.js"></script>
 <script>
-const __role = (sessionStorage.getItem("role") || "").toUpperCase();
-    if (sessionStorage.getItem("isLoggedIn") !== "true" || (__role !== "ADMIN" && __role !== "SUPER_ADMIN")) {
-        window.location.href = "access.html";
+(function () {
+  const API = "https://fraud-detection-system-j4bg.onrender.com";
+  const role = (sessionStorage.getItem("role") || "").toUpperCase();
+  if (sessionStorage.getItem("isLoggedIn") !== "true" || (role !== "ADMIN" && role !== "SUPER_ADMIN")) {
+    location.href = "access.html";
+    return;
+  }
+
+  let liveTimer = null;
+  let pieChart = null;
+  let barChart = null;
+
+  function $(id) { return document.getElementById(id); }
+
+  function setLiveUi(on) {
+    $("btnStartLive").style.display = on ? "none" : "inline-block";
+    $("btnStopLive").style.display = on ? "inline-block" : "none";
+    $("liveStatus").textContent = on ? "Active" : "Offline";
+    $("liveStatus").className = "status" + (on ? " active" : "");
+  }
+
+  function addFeed(tx, feedId) {
+    const feed = $(feedId);
+    if (!feed || !tx) return;
+    if (feed.querySelector(".msg")) feed.innerHTML = "";
+    const status = tx.status || "NORMAL";
+    const score = Number(tx.riskScore != null ? tx.riskScore : 0);
+    const level = tx.riskLevel || "LOW";
+    const acc = tx.accountNumber != null ? tx.accountNumber : "—";
+    const amt = Number(tx.amount != null ? tx.amount : 0).toFixed(2);
+    let cls = "cleared", label = "CLEARED";
+    if (status === "SUSPICIOUS") { cls = "flagged"; label = "FLAGGED"; }
+    else if (status === "PENDING_REVIEW") { cls = "pending"; label = "PENDING REVIEW"; }
+    let reasons = tx.reasons;
+    if ((!reasons || !reasons.length) && tx.reasonsJson) reasons = String(tx.reasonsJson).split("||");
+    if (!reasons || !reasons.length) reasons = ["Processed"];
+    const el = document.createElement("div");
+    el.className = "item " + cls;
+    el.innerHTML =
+      '<div class="row"><span>ACC ' + acc + '</span><span>RM ' + amt + '</span></div>' +
+      '<div class="meta">' + label + " — " + score + "% · " + level + "</div>" +
+      '<div class="meta">' + reasons.slice(0, 2).join(" · ") + "</div>";
+    feed.insertBefore(el, feed.firstChild);
+    while (feed.children.length > 40) feed.removeChild(feed.lastChild);
+  }
+
+  async function generateOne() {
+    try {
+      let res = await fetch(API + "/api/transactions/generate", { method: "GET", headers: { "Accept": "application/json" } });
+      if (!res.ok) {
+        res = await fetch(API + "/api/transactions/generate", { method: "POST", headers: { "Accept": "application/json" } });
+      }
+      if (!res.ok) {
+        $("liveMsg").textContent = "Generate failed (HTTP " + res.status + "). Is the server awake?";
+        return;
+      }
+      const tx = await res.json();
+      if (!tx || tx.accountNumber == null) {
+        $("liveMsg").textContent = "Generate returned an empty payload.";
+        return;
+      }
+      addFeed(tx, "liveFeed");
+      $("liveMsg").textContent = "Last event: ACC " + tx.accountNumber + " · RM " + Number(tx.amount).toFixed(2);
+      await loadStats();
+    } catch (e) {
+      console.error(e);
+      $("liveMsg").textContent = "Network error: " + (e.message || e);
     }
+  }
 
-        const __who = document.getElementById("userName");
-        if (__who) __who.textContent = sessionStorage.getItem("fullName") || sessionStorage.getItem("username") || "Admin";
+  function startLive() {
+    if (liveTimer) return;
+    setLiveUi(true);
+    $("liveMsg").textContent = "Live monitoring started…";
+    generateOne();
+    liveTimer = setInterval(generateOne, 3200);
+  }
 
-        function applyTheme() {
-            const dark = localStorage.getItem("theme") === "dark";
-            document.body.classList.toggle("dark", dark);
-            document.documentElement.classList.toggle("dark", dark);
-            document.querySelectorAll("#themeBtn, [data-theme-btn]").forEach(function(b){
-              b.textContent = dark ? "Light Mode" : "Dark Mode";
-            });
-        }
-        function toggleTheme() {
-            localStorage.setItem("theme", document.body.classList.contains("dark") ? "light" : "dark");
-            applyTheme();
-            if (typeof loadDashboard === "function") loadDashboard();
-        }
-        applyTheme();
+  function stopLive() {
+    if (liveTimer) { clearInterval(liveTimer); liveTimer = null; }
+    setLiveUi(false);
+    $("liveMsg").textContent = "Live monitoring stopped.";
+  }
 
-        function logout() {
-            stopLiveMonitoring();
-            sessionStorage.clear();
-            window.location.href = "access.html";
-        }
+  async function loadStats() {
+    try {
+      const res = await fetch(API + "/api/transactions/stats");
+      const data = await res.json();
+      const total = data.total != null ? data.total : 0;
+      const normal = data.normal != null ? data.normal : 0;
+      const pending = data.pendingReview != null ? data.pendingReview : 0;
+      const flagged = data.suspicious != null ? data.suspicious : 0;
+      $("statTotal").textContent = total;
+      $("statCleared").textContent = normal;
+      $("statPending").textContent = pending;
+      $("statFlagged").textContent = flagged;
+      renderCharts(normal, pending, flagged);
+    } catch (e) {
+      console.error(e);
+    }
+  }
 
-        let inactivityTime = 2 * 60 * 1000;
-        let logoutTimer;
-        function resetLogoutTimer() {
-            clearTimeout(logoutTimer);
-            logoutTimer = setTimeout(() => {
-                stopLiveMonitoring();
-                sessionStorage.clear();
-                alert("Session expired due to inactivity.");
-                window.location.href = "access.html";
-            }, inactivityTime);
-        }
-        window.onload = resetLogoutTimer;
-        document.onmousemove = resetLogoutTimer;
-        document.onkeypress = resetLogoutTimer;
-        document.onclick = resetLogoutTimer;
-        document.onscroll = resetLogoutTimer;
+  function renderCharts(normal, pending, flagged) {
+    if (typeof Chart === "undefined") return;
+    const pie = $("pieChart");
+    const bar = $("barChart");
+    if (!pie || !bar) return;
+    const data = [normal, pending, flagged];
+    const labels = ["Cleared", "Pending", "Flagged"];
+    const colors = ["#0f6b4c", "#9a6b12", "#b42318"];
+    if (pieChart) pieChart.destroy();
+    if (barChart) barChart.destroy();
+    pieChart = new Chart(pie, {
+      type: "pie",
+      data: { labels: labels, datasets: [{ data: data, backgroundColor: colors }] },
+      options: { plugins: { legend: { position: "bottom" } } }
+    });
+    barChart = new Chart(bar, {
+      type: "bar",
+      data: { labels: labels, datasets: [{ label: "Count", data: data, backgroundColor: colors }] },
+      options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+    });
+  }
 
-        let pieChart, barChart;
-        let liveInterval = null;
-        let liveEventCount = 0;
-        let uploadEventCount = 0;
-        let isUploading = false;
+  async function retrainMl() {
+    $("toolMsg").textContent = "Retraining…";
+    try {
+      const res = await fetch(API + "/api/transactions/ml/retrain", { method: "POST" });
+      const data = await res.json();
+      $("toolMsg").textContent = data.message || JSON.stringify(data);
+    } catch (e) {
+      $("toolMsg").textContent = "Retrain failed";
+    }
+  }
 
-        function chartColors() {
-            const s = getComputedStyle(document.body);
-            return [
-                s.getPropertyValue('--success').trim(),
-                s.getPropertyValue('--danger').trim(),
-                s.getPropertyValue('--warn').trim()
-            ];
-        }
+  async function resetMl() {
+    if (!confirm("Reset ML model only?")) return;
+    try {
+      const res = await fetch(API + "/api/transactions/ml/reset", { method: "POST" });
+      const data = await res.json();
+      $("toolMsg").textContent = data.message || "ML reset";
+    } catch (e) {
+      $("toolMsg").textContent = "Reset ML failed";
+    }
+  }
 
-        async function loadDashboard() {
-            refreshMlStatus();
-            try {
-                const res = await fetch("https://fraud-detection-system-j4bg.onrender.com/api/transactions/stats");
-                const stats = await res.json();
+  async function resetAll() {
+    if (!confirm("Delete ALL transactions? This cannot be undone.")) return;
+    const code = prompt("Type DELETE_ALL_DATA to confirm");
+    if (code !== "DELETE_ALL_DATA") { alert("Cancelled"); return; }
+    try {
+      const res = await fetch(API + "/api/transactions/clear-all?confirm=DELETE_ALL_DATA", { method: "DELETE" });
+      const data = await res.json();
+      alert(data.message || "Cleared");
+      $("liveFeed").innerHTML = '<div class="msg">No live events yet.</div>';
+      loadStats();
+    } catch (e) {
+      alert("Clear failed");
+    }
+  }
 
-                document.getElementById("totalCount").textContent = stats.total;
-                document.getElementById("normalCount").textContent = stats.normal;
-                document.getElementById("suspiciousCount").textContent = stats.suspicious;
-                document.getElementById("falsePositiveCount").textContent = stats.falsePositive;
+  async function uploadCsv() {
+    const fileInput = $("csvFile");
+    if (!fileInput.files || !fileInput.files[0]) {
+      $("uploadMsg").textContent = "Choose a CSV file first.";
+      return;
+    }
+    const fd = new FormData();
+    fd.append("file", fileInput.files[0]);
+    $("uploadMsg").textContent = "Uploading…";
+    $("btnUpload").disabled = true;
+    try {
+      const res = await fetch(API + "/api/transactions/upload", { method: "POST", body: fd });
+      const data = await res.json();
+      $("uploadMsg").textContent = data.message || ("Processed " + (data.processed || 0));
+      await loadStats();
+    } catch (e) {
+      $("uploadMsg").textContent = "Upload failed";
+    } finally {
+      $("btnUpload").disabled = false;
+    }
+  }
 
-                if (pieChart) pieChart.destroy();
-                if (barChart) barChart.destroy();
+  // Bind buttons — addEventListener only (no fragile inline onclick)
+  $("btnStartLive").addEventListener("click", function (e) { e.preventDefault(); startLive(); });
+  $("btnStopLive").addEventListener("click", function (e) { e.preventDefault(); stopLive(); });
+  $("btnRefresh").addEventListener("click", function (e) { e.preventDefault(); loadStats(); });
+  $("btnRetrain").addEventListener("click", function (e) { e.preventDefault(); retrainMl(); });
+  $("btnResetMl").addEventListener("click", function (e) { e.preventDefault(); resetMl(); });
+  $("btnResetAll").addEventListener("click", function (e) { e.preventDefault(); resetAll(); });
+  $("btnUpload").addEventListener("click", function (e) { e.preventDefault(); uploadCsv(); });
 
-                const colors = chartColors();
-                const muted = getComputedStyle(document.body).getPropertyValue('--muted').trim();
-                const border = getComputedStyle(document.body).getPropertyValue('--border').trim();
+  // expose for debugging
+  window.startLiveMonitoring = startLive;
+  window.stopLiveMonitoring = stopLive;
 
-                pieChart = new Chart(document.getElementById("pieChart").getContext("2d"), {
-                    type: "doughnut",
-                    data: {
-                        labels: ["Cleared", "Flagged", "False Positive"],
-                        datasets: [{
-                            data: [stats.normal, stats.suspicious, stats.falsePositive],
-                            backgroundColor: colors,
-                            borderWidth: 0
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                position: "bottom",
-                                labels: { color: muted, boxWidth: 10, font: { size: 11 } }
-                            }
-                        }
-                    }
-                });
-
-                barChart = new Chart(document.getElementById("barChart").getContext("2d"), {
-                    type: "bar",
-                    data: {
-                        labels: ["Cleared", "Flagged", "False Positive"],
-                        datasets: [{
-                            data: [stats.normal, stats.suspicious, stats.falsePositive],
-                            backgroundColor: colors,
-                            borderRadius: 4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: { legend: { display: false } },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: { color: muted },
-                                grid: { color: border }
-                            },
-                            x: {
-                                ticks: { color: muted },
-                                grid: { display: false }
-                            }
-                        }
-                    }
-                });
-            } catch (e) {
-                console.error(e);
-            }
-        }
-
-        function addFeedItem(containerId, tx, mode = "live") {
-            const list = document.getElementById(containerId);
-            if (!list || !tx) return;
-            if (list.querySelector(".empty")) list.innerHTML = "";
-
-            const status = tx.status || "NORMAL";
-            const isFlagged = status === "SUSPICIOUS";
-            const isPending = status === "PENDING_REVIEW";
-            let reasons = tx.reasons;
-            if ((!reasons || !reasons.length) && tx.reasonsJson) {
-                reasons = String(tx.reasonsJson).split("||").filter(Boolean);
-            }
-            if (!reasons || !reasons.length) reasons = ["No anomaly detected"];
-            const preview = reasons[0];
-            const score = (tx.riskScore != null && !isNaN(Number(tx.riskScore))) ? Number(tx.riskScore) : 0;
-            const level = tx.riskLevel || (score >= 75 ? "CRITICAL" : score >= 50 ? "HIGH" : score >= 25 ? "MODERATE" : "LOW");
-            const acc = tx.accountNumber != null ? tx.accountNumber : "—";
-            const amt = (tx.amount != null && !isNaN(Number(tx.amount))) ? Number(tx.amount).toFixed(2) : "0.00";
-            let label = "CLEARED";
-            let cls = "cleared";
-            if (isFlagged) { label = "FLAGGED"; cls = "flagged"; }
-            else if (isPending) { label = "PENDING REVIEW"; cls = "flagged"; }
-
-            const item = document.createElement("div");
-            item.className = `activity-item ${cls}`;
-            item.title = "Click to view full reasons";
-
-            item.innerHTML = `
-                <div class="row">
-                    <span class="acc">ACC ${acc}</span>
-                    <span class="amt">RM ${amt}</span>
-                </div>
-                <div class="status-line ${cls}">
-                    ${label} — ${score}% · ${level}
-                </div>
-                <div class="reason">${preview} <span style="opacity:.7">(click for more)</span></div>
-                <div class="reason-full" style="display:none; margin-top:8px; padding-top:8px; border-top:1px solid var(--border);">
-                    <strong style="font-size:11px; color:var(--accent);">Risk assessment</strong>
-                    <div style="margin:6px 0; font-size:11px; color:var(--muted);">
-                        Score ${tx.riskScore}% · Level ${level} · Status ${tx.status || "-"}
-                    </div>
-                    <strong style="font-size:11px; color:var(--accent);">Why?</strong>
-                    <ul style="margin:6px 0 0 16px; color:var(--muted); font-size:11px;">
-                        ${reasons.map(r => `<li style="margin-bottom:3px;">${r}</li>`).join("")}
-                    </ul>
-                    <div style="margin-top:6px; font-size:11px; color:var(--muted);">
-                        Type: ${tx.transactionType || "-"} · Location: ${tx.location || "-"}
-                    </div>
-                </div>
-            `;
-
-            item.addEventListener("click", () => {
-                const full = item.querySelector(".reason-full");
-                full.style.display = full.style.display === "none" ? "block" : "none";
-            });
-
-            list.insertBefore(item, list.firstChild);
-            while (list.children.length > 25) list.removeChild(list.lastChild);
-
-            if (mode === "live") {
-                liveEventCount++;
-                document.getElementById("liveCount").textContent = liveEventCount + " events";
-            } else {
-                uploadEventCount++;
-                document.getElementById("uploadCount").textContent = uploadEventCount + " processed";
-            }
-        }
-
-        async async function generateOneTransaction() {
-            const statusEl = document.getElementById("liveStatus");
-            try {
-                const res = await fetch("https://fraud-detection-system-j4bg.onrender.com/api/transactions/generate", {
-                    method: "GET",
-                    headers: { "Accept": "application/json" }
-                });
-                if (!res.ok) {
-                    // fallback POST if GET blocked by old deploy
-                    const res2 = await fetch("https://fraud-detection-system-j4bg.onrender.com/api/transactions/generate", {
-                        method: "POST",
-                        headers: { "Accept": "application/json" }
-                    });
-                    if (!res2.ok) {
-                        if (statusEl) statusEl.textContent = "Live error: generate HTTP " + res.status;
-                        console.error("generate failed", res.status, res2.status);
-                        return;
-                    }
-                    const tx2 = await res2.json();
-                    if (tx2 && tx2.accountNumber != null) {
-                        addFeedItem("liveFeed", tx2, "live");
-                        if (typeof loadDashboard === "function") loadDashboard();
-                    }
-                    return;
-                }
-                const tx = await res.json();
-                if (!tx || tx.accountNumber == null) {
-                    if (statusEl) statusEl.textContent = "Live error: empty transaction payload";
-                    console.error("invalid generate payload", tx);
-                    return;
-                }
-                addFeedItem("liveFeed", tx, "live");
-                if (statusEl) {
-                    statusEl.textContent = "Live Monitoring: Active · last ACC " + tx.accountNumber;
-                    statusEl.classList.add("active");
-                }
-                if (typeof loadDashboard === "function") loadDashboard();
-            } catch (e) {
-                console.error(e);
-                if (statusEl) statusEl.textContent = "Live error: " + (e.message || "network");
-            }
-        }
-
-        window.startLiveMonitoring = function startLiveMonitoring() {
-            try {
-                if (liveInterval) return;
-                const startBtn = document.getElementById("startBtn");
-                const stopBtn = document.getElementById("stopBtn");
-                const statusEl = document.getElementById("liveStatus");
-                if (startBtn) startBtn.style.display = "none";
-                if (stopBtn) stopBtn.style.display = "inline-block";
-                if (statusEl) {
-                    statusEl.textContent = "Live Monitoring: Starting…";
-                    statusEl.classList.add("active");
-                }
-                generateOneTransaction();
-                liveInterval = setInterval(generateOneTransaction, 3200);
-            } catch (e) {
-                console.error("startLiveMonitoring", e);
-                alert("Could not start live monitoring: " + e.message);
-            }
-        }
-
-        window.stopLiveMonitoring = function stopLiveMonitoring() {
-            try {
-                if (liveInterval) {
-                    clearInterval(liveInterval);
-                    liveInterval = null;
-                }
-                const startBtn = document.getElementById("startBtn");
-                const stopBtn = document.getElementById("stopBtn");
-                const statusEl = document.getElementById("liveStatus");
-                if (startBtn) startBtn.style.display = "inline-block";
-                if (stopBtn) stopBtn.style.display = "none";
-                if (statusEl) {
-                    statusEl.textContent = "Live Monitoring: Offline";
-                    statusEl.classList.remove("active");
-                }
-            } catch (e) {
-                console.error(e);
-            }
-        }
-
-        // Ensure buttons work even if onclick attribute is stripped
-        document.addEventListener("DOMContentLoaded", function () {
-            const startBtn = document.getElementById("startBtn");
-            const stopBtn = document.getElementById("stopBtn");
-            if (startBtn) startBtn.addEventListener("click", function (e) { e.preventDefault(); startLiveMonitoring(); });
-            if (stopBtn) stopBtn.addEventListener("click", function (e) { e.preventDefault(); stopLiveMonitoring(); });
-        });
-
-        async function startSequentialUpload() {
-            if (isUploading) return;
-
-            const fileInput = document.getElementById("csvFile");
-            const message = document.getElementById("uploadMessage");
-            const uploadBtn = document.getElementById("uploadBtn");
-
-            if (!fileInput.files || fileInput.files.length === 0) {
-                message.style.color = "var(--danger)";
-                message.textContent = "Select a CSV file first.";
-                return;
-            }
-
-            const text = await fileInput.files[0].text();
-            const rows = text.trim().split("\n").slice(1).filter(l => l.trim().length > 0);
-
-            if (rows.length === 0) {
-                message.style.color = "var(--danger)";
-                message.textContent = "CSV has no data rows.";
-                return;
-            }
-
-            isUploading = true;
-            uploadBtn.disabled = true;
-            uploadBtn.textContent = "Verifying...";
-            message.style.color = "var(--accent)";
-            message.textContent = `Processing 0 / ${rows.length}...`;
-            document.getElementById("uploadFeed").innerHTML = "";
-            uploadEventCount = 0;
-
-            for (let i = 0; i < rows.length; i++) {
-                const cols = rows[i].split(",");
-                if (cols.length < 4) continue;
-
-                const payload = {
-                    accountNumber: cols[0].trim(),
-                    amount: parseFloat(cols[1].trim()),
-                    transactionType: cols[2].trim(),
-                    location: cols[3].trim()
-                };
-
-                const list = document.getElementById("uploadFeed");
-                const temp = document.createElement("div");
-                temp.className = "activity-item processing";
-                temp.id = "temp-processing";
-                temp.innerHTML = `
-                    <div class="row">
-                        <span class="acc">ACC ${payload.accountNumber}</span>
-                        <span class="amt">RM ${payload.amount.toFixed(2)}</span>
-                    </div>
-                    <div class="status-line processing">Scanning...</div>
-                `;
-                list.insertBefore(temp, list.firstChild);
-
-                try {
-                    const res = await fetch("https://fraud-detection-system-j4bg.onrender.com/api/transactions/check", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(payload)
-                    });
-                    const tx = await res.json();
-                    const tempEl = document.getElementById("temp-processing");
-                    if (tempEl) tempEl.remove();
-                    addFeedItem("uploadFeed", tx, "upload");
-                } catch (e) {
-                    const tempEl = document.getElementById("temp-processing");
-                    if (tempEl) tempEl.remove();
-                }
-
-                message.textContent = `Processing ${i + 1} / ${rows.length}...`;
-                await new Promise(r => setTimeout(r, 650));
-            }
-
-            message.style.color = "var(--success)";
-            message.textContent = `Complete — ${rows.length} transactions processed. Click a result for full reasons.`;
-            uploadBtn.disabled = false;
-            uploadBtn.textContent = "Upload & Verify";
-            isUploading = false;
-            loadDashboard();
-        }
-
-        async function clearAllData() {
-            if (!confirm("Delete ALL transactions and reset ML? This cannot be undone.")) return;
-            try {
-                const res = await fetch("https://fraud-detection-system-j4bg.onrender.com/api/transactions/clear-all?confirm=DELETE_ALL_DATA", { method: "DELETE" });
-                const data = await res.json();
-                alert((data.message || "Cleared") + " (deleted: " + (data.deleted || 0) + ")");
-                document.getElementById("liveFeed").innerHTML = '<div class="empty">Waiting for live transactions...</div>';
-                document.getElementById("uploadFeed").innerHTML = '<div class="empty">Upload a CSV file to begin sequential verification.</div>';
-                liveEventCount = 0;
-                uploadEventCount = 0;
-                document.getElementById("liveCount").textContent = "0 events";
-                document.getElementById("uploadCount").textContent = "0 processed";
-                stopLiveMonitoring();
-                loadDashboard();
-            } catch (e) {
-                alert("Failed to clear data. Is the server running?");
-            }
-        }
-
-        async function resetEntireSystem() {
-            const confirmed = confirm(
-                "WARNING\n\n" +
-                "This will permanently delete ALL transaction history " +
-                "and reset the ML model.\n\n" +
-                "You will be logged out.\n\nContinue?"
-            );
-            if (!confirmed) return;
-
-            try {
-                stopLiveMonitoring();
-                const res = await fetch("https://fraud-detection-system-j4bg.onrender.com/api/transactions/clear-all?confirm=DELETE_ALL_DATA", { method: "DELETE" });
-                const data = await res.json();
-
-                document.getElementById("totalCount").textContent = "0";
-                document.getElementById("normalCount").textContent = "0";
-                document.getElementById("suspiciousCount").textContent = "0";
-                document.getElementById("falsePositiveCount").textContent = "0";
-                document.getElementById("liveFeed").innerHTML = '<div class="empty">Waiting for live transactions...</div>';
-                document.getElementById("uploadFeed").innerHTML = '<div class="empty">Upload a CSV file to begin sequential verification.</div>';
-                liveEventCount = 0;
-                uploadEventCount = 0;
-                document.getElementById("liveCount").textContent = "0 events";
-                document.getElementById("uploadCount").textContent = "0 processed";
-
-                alert(
-                    "SYSTEM RESET COMPLETE\n\n" +
-                    "Transactions deleted: " + (data.deleted || 0) + "\n" +
-                    "ML model has been reset.\n\n" +
-                    "You will now be returned to the login page."
-                );
-
-                sessionStorage.clear();
-                window.location.href = "access.html";
-            } catch (error) {
-                console.error(error);
-                alert("Unable to reset the system.\n\nMake sure the Spring Boot server is running.");
-            }
-        }
-
-        async function refreshMlStatus() {
-            const el = document.getElementById("mlStatusText");
-            if (!el) return;
-            try {
-                const res = await fetch("https://fraud-detection-system-j4bg.onrender.com/api/transactions/ml/status");
-                const s = await res.json();
-                if (s.ready) {
-                    el.innerHTML = `<strong style="color:var(--accent)">ML Status: Ready</strong> · Training samples: <b>${s.trainSize}</b> · Last trained: ${s.lastTrained ? String(s.lastTrained).replace("T"," ").substring(0,19) : "-"}`;
-                } else {
-                    el.innerHTML = `<strong>ML Status: Rules Only</strong> · Isolation Forest not trained (samples: ${s.trainSize || 0}). Generate normal transactions, then Retrain.`;
-                }
-            } catch (e) {
-                el.textContent = "ML Status: unavailable (is Spring Boot running?)";
-            }
-        }
-
-        async function retrainMl() {
-            try {
-                const res = await fetch("https://fraud-detection-system-j4bg.onrender.com/api/transactions/ml/retrain", { method: "POST" });
-                const data = await res.json();
-                alert(data.message || (data.success ? "Retrained" : "Train failed"));
-                refreshMlStatus();
-            } catch (e) {
-                alert("Retrain failed — server offline?");
-            }
-        }
-
-        async function resetMlOnly() {
-            if (!confirm("Reset Isolation Forest model only? Transaction history will be kept.")) return;
-            try {
-                const res = await fetch("https://fraud-detection-system-j4bg.onrender.com/api/transactions/ml/reset", { method: "POST" });
-                const data = await res.json();
-                alert(data.message || "ML reset");
-                refreshMlStatus();
-            } catch (e) {
-                alert("Reset failed — server offline?");
-            }
-        }
-
-        loadDashboard();
-        refreshMlStatus();
+  loadStats();
+  fetch(API + "/api/transactions/ml/status").then(r => r.json()).then(d => {
+    $("toolMsg").textContent = "ML status: " + (d.message || (d.ready ? "Ready" : "Not ready"));
+  }).catch(function () { $("toolMsg").textContent = "ML status: unavailable"; });
+})();
 </script>
-<script src="js/page-transitions.js" defer></script>
-
-<script src="js/theme.js" defer></script>
-<script src="js/app-shell.js" defer></script>
-<script src="js/page-transitions.js" defer></script>
 </body>
 </html>
