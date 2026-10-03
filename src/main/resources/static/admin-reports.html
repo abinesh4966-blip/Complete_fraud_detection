@@ -6,150 +6,139 @@
 <title>Reports · BSN FDS</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&display=swap');
-:root{
-  --bsn:#003366; --bsn-deep:#00244d; --bsn-soft:#e8eef6; --gold:#c4a35a;
-  --bg:#eef2f7; --surface:#ffffff; --line:#cdd7e5; --text:#1a2332; --muted:#5c6b7c;
-  --danger:#b42318; --danger-bg:#fdecea; --success:#0f6b4c; --success-bg:#e8f6ef;
-  --warn:#9a6b12; --shadow:0 10px 28px rgba(0,38,77,.07); --radius:4px;
-}
-body.dark{
-  --bg:#0b1a33; --surface:#12233f; --line:#2a3f5f; --text:#e8eef6; --muted:#9aadc2;
-  --bsn-soft:#18304f; --shadow:0 10px 28px rgba(0,0,0,.35);
-}
+:root{--bsn:#003366;--bg:#eef2f7;--surface:#fff;--line:#cdd7e5;--text:#1a2332;--muted:#5c6b7c;--danger:#b42318;--danger-bg:#fdecea;--success:#0f6b4c;--success-bg:#e8f6ef;--warn:#9a6b12;--shadow:0 8px 24px rgba(0,38,77,.07)}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Libre Franklin',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5}
-.navbar{background:var(--bsn);color:#fff;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
-body.dark .navbar{background:#061224}
-.brand{display:flex;align-items:center;gap:12px}
-.brand-mark{width:36px;height:36px;border-radius:2px;background:rgba(255,255,255,.12);display:grid;place-items:center;font-weight:700;font-size:12px}
-.brand h2{font-size:16px;font-weight:700}
-.brand span{display:block;font-size:11px;opacity:.75;font-weight:500}
-.nav-links{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.nav-links .who{font-size:13px;opacity:.9;margin-right:4px}
-.nav-links a,.nav-links button{color:#fff;text-decoration:none;background:transparent;border:1px solid rgba(255,255,255,.32);padding:8px 12px;border-radius:2px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
-.nav-links a:hover,.nav-links button:hover{background:rgba(255,255,255,.12)}
-.nav-links a.active{background:#fff;color:var(--bsn);border-color:#fff}
-.logout-btn{border-color:rgba(240,180,174,.55)!important;background:rgba(180,35,24,.22)!important}
-.page{max-width:1180px;margin:0 auto;padding:28px 20px 48px}
-.page-title{margin-bottom:20px}
-.page-title h1{font-size:24px;color:var(--bsn);font-weight:700;margin-bottom:6px}
-body.dark .page-title h1{color:#9ec5ea}
-.page-title p{color:var(--muted);font-size:14px}
-.card,.panel,.toolbar,.stat{
-  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)
-}
-.toolbar{padding:18px 20px;margin-bottom:20px}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
-@media(max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:520px){.stats{grid-template-columns:1fr}}
-.stat{padding:18px 16px;min-height:110px;display:flex;flex-direction:column;justify-content:space-between}
-.stat .label{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
-.stat .value{font-size:28px;font-weight:700;color:var(--bsn);margin-top:10px}
-body.dark .stat .value{color:#9ec5ea}
-.stat.flag .value{color:var(--danger)}
-.stat.ok .value{color:var(--success)}
-.panel{overflow:hidden;margin-bottom:18px}
-.panel-head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-.panel-head h2{font-size:15px;color:var(--bsn);font-weight:700}
-body.dark .panel-head h2{color:#9ec5ea}
-.panel-body{padding:14px 16px}
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.grid-3{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:16px}
-@media(max-width:1000px){.grid-2,.grid-3{grid-template-columns:1fr}}
-.btn{border:1px solid var(--line);background:var(--surface);color:var(--text);padding:10px 14px;border-radius:2px;font:inherit;font-size:13px;font-weight:700;cursor:pointer}
-.btn-primary{background:var(--bsn);color:#fff;border-color:var(--bsn)}
-.btn-primary:hover{background:var(--bsn-deep)}
-.btn-danger{background:var(--danger);color:#fff;border-color:var(--danger)}
-.btn-ghost{background:transparent;color:var(--bsn)}
-.btn-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-.pill{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;font-size:12px;font-weight:700;background:var(--bsn-soft);color:var(--muted);border:1px solid var(--line)}
-.pill.on{background:var(--success-bg);color:var(--success);border-color:#b7e0cc}
-.empty{text-align:center;color:var(--muted);font-size:14px;padding:36px 16px;line-height:1.6}
+body{font-family:'Libre Franklin',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.navbar{background:var(--bsn);color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.nav-links{display:flex;gap:8px;flex-wrap:wrap}
+.nav-links a,.nav-links button{color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,.35);padding:8px 12px;border-radius:2px;background:transparent;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.nav-links a.active{background:#fff;color:var(--bsn)}
+.page{max-width:1100px;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:22px;color:var(--bsn);margin-bottom:6px}
+.sub{color:var(--muted);font-size:14px;margin-bottom:18px}
+.policy{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
+@media(max-width:700px){.policy{grid-template-columns:1fr}}
+.policy div{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:14px;box-shadow:var(--shadow)}
+.policy strong{display:block;color:var(--bsn);font-size:13px;margin-bottom:4px}
+.policy span{font-size:12px;color:var(--muted);line-height:1.4}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+@media(max-width:800px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:16px;box-shadow:var(--shadow)}
+.stat .l{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:700}
+.stat .v{font-size:26px;font-weight:700;color:var(--bsn);margin-top:6px}
+.stat.flag .v{color:var(--danger)}.stat.warn .v{color:var(--warn)}.stat.ok .v{color:var(--success)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:4px;box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden}
+.ph{padding:12px 16px;border-bottom:1px solid var(--line);font-weight:700;color:var(--bsn);font-size:14px}
+.pb{padding:14px 16px;overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:13px}
-th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle}
-th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);background:var(--bsn-soft);font-weight:700}
-label{display:block;font-size:12px;font-weight:600;color:var(--bsn);margin:0 0 6px}
-body.dark label{color:#9ec5ea}
-input,select,textarea{
-  width:100%;border:1px solid var(--line);border-radius:2px;padding:10px 12px;font:inherit;font-size:14px;
-  background:var(--surface);color:var(--text);margin-bottom:12px
+th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left}
+th{font-size:11px;text-transform:uppercase;color:var(--muted);background:#e8eef6}
+.badge{display:inline-block;padding:3px 8px;border-radius:2px;font-size:11px;font-weight:700}
+.badge.SUSPICIOUS{background:var(--danger-bg);color:var(--danger)}
+.badge.PENDING_REVIEW{background:#fff6e5;color:var(--warn)}
+.badge.NORMAL{background:var(--success-bg);color:var(--success)}
+.empty{text-align:center;color:var(--muted);padding:24px;font-size:14px}
+.btn{display:inline-block;margin-top:8px;padding:8px 12px;background:var(--bsn);color:#fff;border:none;border-radius:2px;font:inherit;font-size:13px;font-weight:600;text-decoration:none;cursor:pointer}
+
+/* Mobile-first operational polish */
+@media (max-width: 768px) {
+  .navbar { flex-direction: column; align-items: flex-start !important; }
+  .nav-links { width: 100%; }
+  .nav-links a, .nav-links button { flex: 1 1 auto; text-align: center; }
+  .stats, .policy, .grid-2, .grid-3 { grid-template-columns: 1fr !important; }
+  table { display: block; overflow-x: auto; white-space: nowrap; }
+  .page { padding: 16px 12px 40px !important; }
+  canvas { max-width: 100% !important; height: auto !important; }
+  input, select, textarea, button { font-size: 16px !important; } /* prevent iOS zoom */
 }
-.badge{display:inline-block;padding:4px 10px;border-radius:2px;font-size:11px;font-weight:700}
-.badge.cleared,.badge.NORMAL{background:var(--success-bg);color:var(--success)}
-.badge.flagged,.badge.SUSPICIOUS,.badge.ADMIN{background:var(--danger-bg);color:var(--danger)}
-.badge.SUPER_ADMIN{background:#fff6e5;color:var(--warn)}
-.badge.USER{background:var(--bsn-soft);color:var(--bsn)}
-.badge.LOCK{background:var(--danger-bg);color:var(--danger)}
-.feed-item{border:1px solid var(--line);border-radius:2px;padding:12px;margin-bottom:10px;background:var(--bsn-soft);cursor:pointer;font-size:13px}
-.feed-item .row{display:flex;justify-content:space-between;gap:8px;margin-bottom:4px}
-.msg{margin-top:10px;padding:10px 12px;border-radius:2px;font-size:13px}
-.msg.ok{background:var(--success-bg);color:var(--success);border:1px solid #b7e0cc}
-.msg.err{background:var(--danger-bg);color:var(--danger);border:1px solid #f0b4ae}
-.filters{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin-bottom:14px}
-.filters > div{min-width:140px}
-canvas{max-width:100%}
+
 </style>
 </head>
 <body>
 <div class="navbar">
-  <div class="brand"><div class="brand-mark">BSN</div><div><h2>BSN Fraud Detection</h2><span>Reports</span></div></div>
+  <strong>BSN · Reports</strong>
   <div class="nav-links">
-    <span class="who" id="userName">Admin</span>
     <a href="dashboard.html">Dashboard</a>
+    <a href="admin-review.html">Case Review</a>
     <a href="checker.html">Checker</a>
     <a href="history.html">History</a>
     <a class="active" href="admin-reports.html">Reports</a>
     <a href="admin-users.html">Users</a>
-    <button type="button" class="logout-btn" onclick="logout()">Logout</button>
+    <button onclick="logout()">Logout</button>
   </div>
 </div>
 <div class="page">
-  <div class="page-title">
-    <h1>Reports</h1>
-    <p>Summary views for monitoring and presentation.</p>
+  <h1>Management reports</h1>
+  <p class="sub">Operational summary for fraud unit and management</p>
+  <div class="policy">
+    <div><strong>LOW (0–24%)</strong><span>Auto cleared</span></div>
+    <div><strong>MODERATE (25–49%)</strong><span>Pending officer review — not auto-cleared</span></div>
+    <div><strong>HIGH / CRITICAL (50%+)</strong><span>Flagged for fraud unit attention</span></div>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="l">Total</div><div class="v" id="sTotal">0</div></div>
+    <div class="stat ok"><div class="l">Cleared</div><div class="v" id="sCleared">0</div></div>
+    <div class="stat warn"><div class="l">Pending review</div><div class="v" id="sPending">0</div></div>
+    <div class="stat flag"><div class="l">Flagged</div><div class="v" id="sFlagged">0</div></div>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="l">Confirmed fraud</div><div class="v" id="sConf">0</div></div>
+    <div class="stat"><div class="l">False positives</div><div class="v" id="sFp">0</div></div>
+    <div class="stat"><div class="l">FP rate</div><div class="v" id="sFpRate">0%</div></div>
+    <div class="stat"><div class="l">Flag rate</div><div class="v" id="sFlagRate">0%</div></div>
   </div>
   <div class="panel">
-    <div class="panel-head"><h2>Overview</h2></div>
-    <div class="panel-body" id="content"><div class="empty">Loading…</div></div>
+    <div class="ph">Open cases (review queue preview)</div>
+    <div class="pb" id="cases"><div class="empty">Loading…</div></div>
+    <div class="pb"><a class="btn" href="admin-review.html">Open full case review</a>
+    <a class="btn" href="https://fraud-detection-system-j4bg.onrender.com/api/transactions/export/csv" target="_blank" rel="noopener">Export CSV</a></div>
+  </div>
+  <div class="panel">
+    <div class="ph">Admin audit trail (latest)</div>
+    <div class="pb" id="audit"><div class="empty">Loading…</div></div>
   </div>
 </div>
 <script>
-const __role = (sessionStorage.getItem("role") || "").toUpperCase();
-    if (sessionStorage.getItem("isLoggedIn") !== "true" || (__role !== "ADMIN" && __role !== "SUPER_ADMIN")) {
-        window.location.href = "access.html";
+const API="https://fraud-detection-system-j4bg.onrender.com";
+const role=(sessionStorage.getItem("role")||"").toUpperCase();
+if(sessionStorage.getItem("isLoggedIn")!=="true"||(role!=="ADMIN"&&role!=="SUPER_ADMIN")) location.href="access.html";
+function logout(){sessionStorage.clear();location.href="access.html"}
+async function load(){
+  try{
+    const s=await (await fetch(API+"/api/transactions/stats")).json();
+    sTotal.textContent=s.total||0;
+    sCleared.textContent=s.normal||0;
+    sPending.textContent=s.pendingReview||0;
+    sFlagged.textContent=s.suspicious||0;
+    sConf.textContent=s.confirmedFraud||0;
+    sFp.textContent=s.falsePositive||0;
+    sFpRate.textContent=(s.falsePositiveRate||0)+"%";
+    sFlagRate.textContent=(s.flagRate||0)+"%";
+  }catch(e){}
+  try{
+    const q=await (await fetch(API+"/api/transactions/review-queue")).json();
+    if(!q.length){cases.innerHTML="<div class='empty'>No open cases. Run checker/live with higher-risk samples.</div>";}
+    else{
+      let h="<table><thead><tr><th>Account</th><th>Amount</th><th>Score</th><th>Level</th><th>Status</th></tr></thead><tbody>";
+      q.slice(0,12).forEach(t=>{
+        h+="<tr><td>"+(t.accountNumber||"—")+"</td><td>RM "+Number(t.amount||0).toFixed(2)+"</td><td>"+t.riskScore+"%</td><td>"+(t.riskLevel||"—")+"</td><td><span class='badge "+t.status+"'>"+t.status+"</span></td></tr>";
+      });
+      cases.innerHTML=h+"</tbody></table>";
     }
-        function applyTheme() {
-            const dark = localStorage.getItem("theme") === "dark";
-            document.body.classList.toggle("dark", dark);
-            document.getElementById("themeBtn").textContent = dark ? "Light Mode" : "Dark Mode";
-        }
-        function toggleTheme() {
-            localStorage.setItem("theme", document.body.classList.contains("dark") ? "light" : "dark");
-            applyTheme();
-        }
-        applyTheme();
-        function logout() { sessionStorage.clear(); window.location.href = "access.html"; }
-
-        function loadReports() {
-            const reports = JSON.parse(localStorage.getItem("userReports") || "[]").reverse();
-            document.getElementById("count").textContent = reports.length + " report(s)";
-            if (reports.length === 0) {
-                document.getElementById("content").innerHTML = "<div class='empty'>No customer reports yet.<br>Ask a user to submit one from Report page.</div>";
-                return;
-            }
-            let html = "";
-            reports.forEach(r => {
-                html += `<div class="report">
-                    <h3>${r.issueType || "Report"}</h3>
-                    <p><strong>User:</strong> ${r.username || "-"} · <strong>Account:</strong> ${r.accountNumber || "-"}</p>
-                    <p><strong>Transaction ID:</strong> ${r.txId || "Not specified"}</p>
-                    <p><strong>Message:</strong> ${r.message}</p>
-                    <p><strong>Submitted:</strong> ${r.createdAt ? r.createdAt.replace("T"," ").substring(0,19) : "-"}</p>
-                </div>`;
-            });
-            document.getElementById("content").innerHTML = html;
-        }
-        loadReports();
+  }catch(e){cases.innerHTML="<div class='empty'>Could not load cases.</div>";}
+  try{
+    const a=await (await fetch(API+"/api/transactions/audit")).json();
+    if(!a.length) audit.innerHTML="<div class='empty'>No audit events yet.</div>";
+    else{
+      let h="<table><thead><tr><th>Time</th><th>Actor</th><th>Action</th><th>Detail</th></tr></thead><tbody>";
+      a.slice(0,20).forEach(x=>{
+        h+="<tr><td>"+(x.timestamp?String(x.timestamp).replace("T"," ").substring(0,19):"—")+"</td><td>"+(x.actor||"—")+"</td><td>"+(x.action||"—")+"</td><td>"+(x.detail||"—")+"</td></tr>";
+      });
+      audit.innerHTML=h+"</tbody></table>";
+    }
+  }catch(e){audit.innerHTML="<div class='empty'>Audit log unavailable.</div>";}
+}
+load();
 </script>
 </body>
 </html>

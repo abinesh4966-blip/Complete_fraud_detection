@@ -40,6 +40,9 @@ public class User {
 
     private boolean emailVerified = false;
 
+    /** Force password change on next login (new admins) */
+    private boolean mustChangePassword = false;
+
     public User() {}
 
     public Long getId() { return id; }
@@ -80,4 +83,7 @@ public class User {
 
     public boolean isEmailVerified() { return emailVerified; }
     public void setEmailVerified(boolean emailVerified) { this.emailVerified = emailVerified; }
+
+    public boolean isMustChangePassword() { return mustChangePassword; }
+    public void setMustChangePassword(boolean mustChangePassword) { this.mustChangePassword = mustChangePassword; }
 }

@@ -92,6 +92,19 @@ canvas{max-width:100%}
 .hidden{display:none!important}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media(max-width:700px){.row{grid-template-columns:1fr}}
+
+/* Mobile-first operational polish */
+@media (max-width: 768px) {
+  .navbar { flex-direction: column; align-items: flex-start !important; }
+  .nav-links { width: 100%; }
+  .nav-links a, .nav-links button { flex: 1 1 auto; text-align: center; }
+  .stats, .policy, .grid-2, .grid-3 { grid-template-columns: 1fr !important; }
+  table { display: block; overflow-x: auto; white-space: nowrap; }
+  .page { padding: 16px 12px 40px !important; }
+  canvas { max-width: 100% !important; height: auto !important; }
+  input, select, textarea, button { font-size: 16px !important; } /* prevent iOS zoom */
+}
+
 </style>
 </head>
 <body>

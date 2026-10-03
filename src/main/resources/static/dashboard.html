@@ -93,6 +93,19 @@ canvas{max-width:100%}
 .live-status{font-size:12px;font-weight:600;color:var(--muted)}
 .upload-box{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
 #liveFeed,#uploadFeed{max-height:380px;overflow:auto}
+
+/* Mobile-first operational polish */
+@media (max-width: 768px) {
+  .navbar { flex-direction: column; align-items: flex-start !important; }
+  .nav-links { width: 100%; }
+  .nav-links a, .nav-links button { flex: 1 1 auto; text-align: center; }
+  .stats, .policy, .grid-2, .grid-3 { grid-template-columns: 1fr !important; }
+  table { display: block; overflow-x: auto; white-space: nowrap; }
+  .page { padding: 16px 12px 40px !important; }
+  canvas { max-width: 100% !important; height: auto !important; }
+  input, select, textarea, button { font-size: 16px !important; } /* prevent iOS zoom */
+}
+
 </style>
 </head>
 <body>
@@ -103,6 +116,7 @@ canvas{max-width:100%}
     <a class="active" href="dashboard.html">Dashboard</a>
     <a href="checker.html">Checker</a>
     <a href="history.html">History</a>
+    <a href="admin-review.html">Case Review</a>
     <a href="admin-reports.html">Reports</a>
     <a href="admin-users.html">Users</a>
     <button type="button" id="themeBtn" onclick="toggleTheme()">Dark Mode</button>
@@ -473,7 +487,7 @@ const __role = (sessionStorage.getItem("role") || "").toUpperCase();
         async function clearAllData() {
             if (!confirm("Delete ALL transactions and reset ML? This cannot be undone.")) return;
             try {
-                const res = await fetch("https://fraud-detection-system-j4bg.onrender.com/api/transactions/clear-all", { method: "DELETE" });
+                const res = await fetch("https://fraud-detection-system-j4bg.onrender.com/api/transactions/clear-all?confirm=DELETE_ALL_DATA", { method: "DELETE" });
                 const data = await res.json();
                 alert((data.message || "Cleared") + " (deleted: " + (data.deleted || 0) + ")");
                 document.getElementById("liveFeed").innerHTML = '<div class="empty">Waiting for live transactions...</div>';
@@ -500,7 +514,7 @@ const __role = (sessionStorage.getItem("role") || "").toUpperCase();
 
             try {
                 stopLiveMonitoring();
-                const res = await fetch("https://fraud-detection-system-j4bg.onrender.com/api/transactions/clear-all", { method: "DELETE" });
+                const res = await fetch("https://fraud-detection-system-j4bg.onrender.com/api/transactions/clear-all?confirm=DELETE_ALL_DATA", { method: "DELETE" });
                 const data = await res.json();
 
                 document.getElementById("totalCount").textContent = "0";

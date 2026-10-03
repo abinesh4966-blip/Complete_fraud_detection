@@ -2,13 +2,13 @@ package com.FraudDetection.fraud_detection_system.controller;
 
 import com.FraudDetection.fraud_detection_system.model.User;
 import com.FraudDetection.fraud_detection_system.repository.UserRepository;
+import com.FraudDetection.fraud_detection_system.service.PasswordService;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -22,6 +22,9 @@ public class AuthController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PasswordService passwordService;
 
     private final SecureRandom random = new SecureRandom();
 
@@ -51,7 +54,7 @@ public class AuthController {
             User su = new User();
             su.setUsername("superadmin");
             su.setEmail("superadmin@bsn-fds.local");
-            su.setPassword(hashPassword("SuperAdmin@123"));
+            su.setPassword(passwordService.hash("SuperAdmin@123"));
             su.setFullName("System Super Admin");
             su.setRole("SUPER_ADMIN");
             su.setAccountNumber("SUPER-001");
@@ -65,21 +68,6 @@ public class AuthController {
         }
     }
 
-    private String hashPassword(String password) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
-            StringBuilder hex = new StringBuilder();
-            for (byte b : hash) {
-                String h = Integer.toHexString(0xff & b);
-                if (h.length() == 1) hex.append('0');
-                hex.append(h);
-            }
-            return hex.toString();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     private boolean validPassword(String p) {
         if (p == null || p.length() < 8) return false;
@@ -186,7 +174,7 @@ public class AuthController {
         u.setFullName(fullName);
         u.setUsername(username);
         u.setEmail(email);
-        u.setPassword(hashPassword(password));
+        u.setPassword(passwordService.hash(password));
         u.setRole("USER");
         u.setAccountNumber("ACC" + System.currentTimeMillis() % 1000000);
         u.setCreatedAt(LocalDateTime.now());
@@ -229,7 +217,7 @@ public class AuthController {
         Map<String, Object> locked = lockInfo(u);
         if (locked != null) return ResponseEntity.status(423).body(locked);
 
-        if (!u.getPassword().equals(hashPassword(password))) {
+        if (!passwordService.matches(password, u.getPassword())) {
             registerFailure(u);
             String msg = "Invalid username/email or password";
             if (u.getLockoutUntil() != null && u.getLockoutUntil().isAfter(LocalDateTime.now())) {
@@ -247,13 +235,18 @@ public class AuthController {
             String key = "2FA:" + u.getUsername();
             otps.put(key, new OtpEntry(code, LocalDateTime.now().plusMinutes(10), "LOGIN_2FA", u.getUsername()));
             // Demo: return OTP when real email SMTP is not configured
-            return ResponseEntity.ok(Map.of(
-                    "success", true,
-                    "require2fa", true,
-                    "message", "OTP sent to registered email (demo may show code)",
-                    "demoOtp", code,
-                    "emailHint", maskEmail(u.getEmail())
-            ));
+            java.util.Map<String, Object> otpRes = new java.util.HashMap<>();
+            otpRes.put("success", true);
+            otpRes.put("require2fa", true);
+            otpRes.put("message", "OTP sent to registered email");
+            otpRes.put("emailHint", maskEmail(u.getEmail()));
+            // Only expose OTP in demo/dev (never in hardened production)
+            if (Boolean.getBoolean("app.security.demo-otp") ||
+                    "true".equalsIgnoreCase(System.getenv().getOrDefault("DEMO_OTP", "true"))) {
+                otpRes.put("demoOtp", code);
+                otpRes.put("message", "OTP issued (demo mode shows code; configure SMTP for production)");
+            }
+            return ResponseEntity.ok(otpRes);
         }
         if (require2fa) {
             OtpEntry entry = otps.get("2FA:" + u.getUsername());
@@ -265,6 +258,10 @@ public class AuthController {
 
         clearFailures(u);
         u.setLastLoginAt(LocalDateTime.now());
+        // Transparent upgrade from legacy SHA-256 to BCrypt
+        if (passwordService.needsUpgrade(u.getPassword())) {
+            u.setPassword(passwordService.hash(password));
+        }
         userRepository.save(u);
 
         return ResponseEntity.ok(Map.of(
@@ -274,7 +271,8 @@ public class AuthController {
                 "email", u.getEmail() != null ? u.getEmail() : "",
                 "fullName", u.getFullName() != null ? u.getFullName() : "",
                 "role", u.getRole(),
-                "accountNumber", u.getAccountNumber() != null ? u.getAccountNumber() : ""
+                "accountNumber", u.getAccountNumber() != null ? u.getAccountNumber() : "",
+                "mustChangePassword", u.isMustChangePassword()
         ));
     }
 
@@ -323,10 +321,47 @@ public class AuthController {
         if (!validPassword(newPassword))
             return ResponseEntity.badRequest().body(Map.of("success", false, "message", "Password must be min 8 chars, 1 uppercase, 1 number, 1 special character"));
 
-        u.setPassword(hashPassword(newPassword));
+        u.setPassword(passwordService.hash(newPassword));
         clearFailures(u);
         otps.remove("RESET:" + u.getUsername());
         userRepository.save(u);
         return ResponseEntity.ok(Map.of("success", true, "message", "Password updated. You can log in now"));
+    }
+
+    @PostMapping("/change-password")
+    public Map<String, Object> changePassword(@RequestBody Map<String, String> body) {
+        Map<String, Object> res = new HashMap<>();
+        String login = body.getOrDefault("login", "").trim();
+        String oldPass = body.getOrDefault("oldPassword", "");
+        String newPass = body.getOrDefault("newPassword", "");
+        if (login.isBlank() || newPass.length() < 8) {
+            res.put("success", false);
+            res.put("message", "Login and new password (min 8 chars) required");
+            return res;
+        }
+        var opt = findLogin(login);
+        if (opt.isEmpty()) {
+            res.put("success", false);
+            res.put("message", "User not found");
+            return res;
+        }
+        User u = opt.get();
+        if (!passwordService.matches(oldPass, u.getPassword()) && !u.isMustChangePassword()) {
+            res.put("success", false);
+            res.put("message", "Current password incorrect");
+            return res;
+        }
+        // strong-ish check
+        if (!newPass.matches(".*[A-Z].*") || !newPass.matches(".*[a-z].*") || !newPass.matches(".*[0-9].*")) {
+            res.put("success", false);
+            res.put("message", "Password must include upper, lower, and number");
+            return res;
+        }
+        u.setPassword(passwordService.hash(newPass));
+        u.setMustChangePassword(false);
+        userRepository.save(u);
+        res.put("success", true);
+        res.put("message", "Password updated");
+        return res;
     }
 }

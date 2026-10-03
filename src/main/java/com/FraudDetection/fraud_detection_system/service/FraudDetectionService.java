@@ -318,23 +318,48 @@ public class FraudDetectionService {
         int riskScore = (int) Math.round(Math.max(0.0, Math.min(100.0, weightedRisk)));
 
         boolean clearlyOrdinary =
-                amount < 2000 && !suspiciousLocation && count10 < 3
+                amount < 1500 && !suspiciousLocation && count10 < 3
                         && amountScore == 0 && locationScore == 0;
         if (clearlyOrdinary && riskScore > 24 && velocityScore < 16) {
             riskScore = Math.min(riskScore, 24);
             reasons.add("Adjusted: ordinary local payment pattern");
         }
 
-        String status = riskScore >= 50 ? "SUSPICIOUS" : "NORMAL";
+        // HARD POLICY (fraud unit): material amounts cannot be auto-cleared
+        if (amount >= 10000 && riskScore < 25) {
+            riskScore = 25;
+            reasons.add("Policy floor: amount RM " + amount + " requires at least officer review");
+        }
+        if (amount >= 25000 && riskScore < 50) {
+            riskScore = 50;
+            reasons.add("Policy floor: amount RM " + amount + " requires fraud unit attention");
+        }
+
+        // Bank IT policy: LOW clear · MODERATE officer review · HIGH/CRITICAL flag
         String riskLevel;
         if (riskScore >= 75) riskLevel = "CRITICAL";
         else if (riskScore >= 50) riskLevel = "HIGH";
         else if (riskScore >= 25) riskLevel = "MODERATE";
         else riskLevel = "LOW";
 
+        String status;
+        if (riskScore >= 50) {
+            status = "SUSPICIOUS";
+            reasons.add("Decision: FLAGGED for fraud unit (" + riskLevel + ")");
+        } else if (riskScore >= 25) {
+            status = "PENDING_REVIEW";
+            reasons.add("Decision: PENDING REVIEW by officer (moderate risk — not auto-cleared)");
+        } else {
+            status = "NORMAL";
+            reasons.add("Decision: AUTO CLEARED (low risk)");
+        }
+
         transaction.setRiskScore(riskScore);
         transaction.setStatus(status);
         transaction.setRiskLevel(riskLevel);
+        if ("PENDING_REVIEW".equals(status) || "SUSPICIOUS".equals(status)) {
+            transaction.setReviewStatus("OPEN");
+        }
         transaction.setTimestamp(now);
         transaction.setReasons(reasons);
 

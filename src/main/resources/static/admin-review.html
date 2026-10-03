@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Case Review · BSN FDS</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&display=swap');
+:root{--bsn:#003366;--bg:#eef2f7;--surface:#fff;--line:#cdd7e5;--text:#1a2332;--muted:#5c6b7c;--danger:#b42318;--success:#0f6b4c;--warn:#9a6b12}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Libre Franklin',system-ui,sans-serif;background:var(--bg);color:var(--text)}
+.navbar{background:var(--bsn);color:#fff;padding:14px 20px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.nav-links{display:flex;gap:8px;flex-wrap:wrap}
+.nav-links a,.nav-links button{color:#fff;border:1px solid rgba(255,255,255,.35);padding:8px 12px;border-radius:2px;background:transparent;font:inherit;font-size:13px;font-weight:600;text-decoration:none;cursor:pointer}
+.nav-links a.active{background:#fff;color:var(--bsn)}
+.page{max-width:1000px;margin:0 auto;padding:24px 16px 48px}
+h1{color:var(--bsn);font-size:22px;margin-bottom:8px}
+.sub{color:var(--muted);font-size:14px;margin-bottom:18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:16px;margin-bottom:12px}
+.card h3{font-size:15px;color:var(--bsn);margin-bottom:8px}
+.meta{font-size:13px;color:var(--muted);line-height:1.5}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+button.act{border:none;border-radius:2px;padding:9px 12px;font:inherit;font-size:12px;font-weight:700;cursor:pointer;color:#fff}
+.b-fraud{background:var(--danger)}
+.b-fp{background:var(--warn)}
+.b-clear{background:var(--success)}
+.empty{text-align:center;padding:40px;color:var(--muted)}
+textarea{width:100%;border:1px solid var(--line);border-radius:2px;padding:8px;font:inherit;margin-top:8px}
+
+/* Mobile-first operational polish */
+@media (max-width: 768px) {
+  .navbar { flex-direction: column; align-items: flex-start !important; }
+  .nav-links { width: 100%; }
+  .nav-links a, .nav-links button { flex: 1 1 auto; text-align: center; }
+  .stats, .policy, .grid-2, .grid-3 { grid-template-columns: 1fr !important; }
+  table { display: block; overflow-x: auto; white-space: nowrap; }
+  .page { padding: 16px 12px 40px !important; }
+  canvas { max-width: 100% !important; height: auto !important; }
+  input, select, textarea, button { font-size: 16px !important; } /* prevent iOS zoom */
+}
+
+</style>
+</head>
+<body>
+<div class="navbar">
+  <strong>BSN · Case Review</strong>
+  <div class="nav-links">
+    <a href="dashboard.html">Dashboard</a>
+    <a class="active" href="admin-review.html">Case Review</a>
+    <a href="admin-reports.html">Reports</a>
+    <a href="history.html">History</a>
+    <button onclick="logout()">Logout</button>
+  </div>
+</div>
+<div class="page">
+  <h1>Fraud officer case review</h1>
+  <p class="sub">Confirm fraud, mark false positive, or clear after investigation. Decisions are audit-logged.</p>
+  <div id="list"><div class="empty">Loading queue…</div></div>
+</div>
+<script>
+const API="https://fraud-detection-system-j4bg.onrender.com";
+const role=(sessionStorage.getItem("role")||"").toUpperCase();
+const officer=sessionStorage.getItem("username")||sessionStorage.getItem("fullName")||"officer";
+if(sessionStorage.getItem("isLoggedIn")!=="true"||(role!=="ADMIN"&&role!=="SUPER_ADMIN")) location.href="access.html";
+function logout(){sessionStorage.clear();location.href="access.html"}
+async function load(){
+  try{
+    const q=await (await fetch(API+"/api/transactions/review-queue")).json();
+    if(!q.length){list.innerHTML="<div class='empty'>No open cases in the review queue.</div>";return;}
+    list.innerHTML=q.map(t=>'<div class="card"><h3>RM '+Number(t.amount||0).toFixed(2)+' · '+(t.transactionType||'—')+' · '+(t.location||'—')+'</h3><div class="meta">Account: <strong>'+(t.accountNumber||'—')+'</strong><br>Risk: <strong>'+t.riskScore+'%</strong> ('+(t.riskLevel||'—')+') · Status: <strong>'+t.status+'</strong><br>Time: '+(t.timestamp?String(t.timestamp).replace('T',' ').substring(0,19):'—')+'</div><textarea id="n'+t.id+'" rows="2" placeholder="Officer note (optional)"></textarea><div class="actions"><button class="act b-fraud" onclick="decide('+t.id+',\'CONFIRMED_FRAUD\')">Confirm fraud</button><button class="act b-fp" onclick="decide('+t.id+',\'FALSE_POSITIVE\')">False positive</button><button class="act b-clear" onclick="decide('+t.id+',\'CLEARED\')">Clear after review</button></div></div>').join('');
+  }catch(e){list.innerHTML="<div class='empty'>Failed to load queue.</div>";}
+}
+async function decide(id, decision){
+  const note=(document.getElementById('n'+id)||{}).value||'';
+  if(decision==='CONFIRMED_FRAUD' && !confirm('Confirm this transaction as FRAUD?')) return;
+  try{
+    const res=await fetch(API+'/api/transactions/'+id+'/review',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({decision,officer,note})});
+    const data=await res.json();
+    alert(data.message||'Updated');
+    load();
+  }catch(e){alert('Review failed');}
+}
+load();
+</script>
+</body>
+</html>

@@ -4,11 +4,10 @@ import com.FraudDetection.fraud_detection_system.model.Transaction;
 import com.FraudDetection.fraud_detection_system.model.User;
 import com.FraudDetection.fraud_detection_system.repository.TransactionRepository;
 import com.FraudDetection.fraud_detection_system.repository.UserRepository;
+import com.FraudDetection.fraud_detection_system.service.PasswordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -21,18 +20,10 @@ public class AdminUserController {
     private UserRepository userRepository;
 
     @Autowired
-    private TransactionRepository transactionRepository;
+    private PasswordService passwordService;
 
-    private String hashPassword(String password) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
-            StringBuilder hex = new StringBuilder();
-            for (byte b : hash) {
-                String h = Integer.toHexString(0xff & b);
-                if (h.length() == 1) hex.append('0');
-                hex.append(h);
-            }
+    @Autowired
+    private TransactionRepository transactionRepository;
             return hex.toString();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -216,8 +207,9 @@ public class AdminUserController {
             admin.setUsername(username);
             admin.setEmail(email);
             admin.setFullName(fullName.isEmpty() ? username : fullName);
-            admin.setPassword(hashPassword(password));
+            admin.setPassword(passwordService.hash(password));
             admin.setRole("ADMIN");
+            admin.setMustChangePassword(true);
             admin.setAccountNumber("ADM" + (System.currentTimeMillis() % 1_000_000));
             admin.setCreatedAt(LocalDateTime.now());
             admin.setEmailVerified(true);
