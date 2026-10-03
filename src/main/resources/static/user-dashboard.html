@@ -473,6 +473,10 @@ body.dark tbody tr:hover { background: rgba(255,255,255,0.03); }
 <script>(function(){try{if(localStorage.getItem("theme")==="dark")document.documentElement.classList.add("dark");}catch(e){}})();</script>
 <link rel="stylesheet" href="css/theme-dark.css">
 <script src="js/theme.js" defer></script>
+
+<link rel="stylesheet" href="css/app-shell.css">
+<script>(function(){try{if(localStorage.getItem("theme")==="dark")document.documentElement.classList.add("dark");}catch(e){}})();</script>
+<link rel="stylesheet" href="css/theme-dark.css">
 </head>
 <body>
   <div class="navbar">
@@ -759,6 +763,10 @@ async function clearMyData() {
 window.addEventListener("beforeunload", stopUserLiveDemo);
 loadUserData();
 </script>
+<script src="js/page-transitions.js" defer></script>
+
+<script src="js/theme.js" defer></script>
+<script src="js/app-shell.js" defer></script>
 <script src="js/page-transitions.js" defer></script>
 </body>
 </html>
