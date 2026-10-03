@@ -3,352 +3,295 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>User Management · BSN FDS</title>
+<title>Users · BSN FDS</title>
+<link rel="stylesheet" href="css/app-shell.css">
+<link rel="stylesheet" href="css/theme-dark.css">
+<link rel="stylesheet" href="css/page-transitions.css">
+<script>(function(){try{if(localStorage.getItem("theme")==="dark")document.documentElement.classList.add("dark");}catch(e){}})();</script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&display=swap');
 :root{
-  --bsn:#003366; --bsn-deep:#00244d; --bsn-soft:#e8eef6; --gold:#c4a35a;
-  --bg:#eef2f7; --surface:#ffffff; --line:#cdd7e5; --text:#1a2332; --muted:#5c6b7c;
-  --danger:#b42318; --danger-bg:#fdecea; --success:#0f6b4c; --success-bg:#e8f6ef;
-  --warn:#9a6b12; --shadow:0 10px 28px rgba(0,38,77,.07); --radius:4px;
-}
-body.dark{
-  --bg:#0b1a33; --surface:#12233f; --line:#2a3f5f; --text:#e8eef6; --muted:#9aadc2;
-  --bsn-soft:#18304f; --shadow:0 10px 28px rgba(0,0,0,.35);
+  --bsn:#003366; --bsn-deep:#00244d; --bg:#eef2f7; --surface:#fff; --line:#cdd7e5;
+  --text:#1a2332; --muted:#5c6b7c; --danger:#b42318; --success:#0f6b4c;
+  --shadow:0 10px 28px rgba(0,38,77,.08);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Libre Franklin',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5}
-.navbar{background:var(--bsn);color:#fff;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
-body.dark .navbar{background:#061224}
-.brand{display:flex;align-items:center;gap:12px}
-.brand-mark{width:36px;height:36px;border-radius:2px;background:rgba(255,255,255,.12);display:grid;place-items:center;font-weight:700;font-size:12px}
-.brand h2{font-size:16px;font-weight:700}
-.brand span{display:block;font-size:11px;opacity:.75;font-weight:500}
-.nav-links{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.nav-links .who{font-size:13px;opacity:.9;margin-right:4px}
-.nav-links a,.nav-links button{color:#fff;text-decoration:none;background:transparent;border:1px solid rgba(255,255,255,.32);padding:8px 12px;border-radius:2px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
-.nav-links a:hover,.nav-links button:hover{background:rgba(255,255,255,.12)}
-.nav-links a.active{background:#fff;color:var(--bsn);border-color:#fff}
-.logout-btn{border-color:rgba(240,180,174,.55)!important;background:rgba(180,35,24,.22)!important}
-.page{max-width:1180px;margin:0 auto;padding:28px 20px 48px}
-.page-title{margin-bottom:20px}
-.page-title h1{font-size:24px;color:var(--bsn);font-weight:700;margin-bottom:6px}
-body.dark .page-title h1{color:#9ec5ea}
-.page-title p{color:var(--muted);font-size:14px}
-.card,.panel,.toolbar,.stat{
-  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)
-}
-.toolbar{padding:18px 20px;margin-bottom:20px}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
-@media(max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:520px){.stats{grid-template-columns:1fr}}
-.stat{padding:18px 16px;min-height:110px;display:flex;flex-direction:column;justify-content:space-between}
-.stat .label{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
-.stat .value{font-size:28px;font-weight:700;color:var(--bsn);margin-top:10px}
-body.dark .stat .value{color:#9ec5ea}
-.stat.flag .value{color:var(--danger)}
-.stat.ok .value{color:var(--success)}
-.panel{overflow:hidden;margin-bottom:18px}
-.panel-head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-.panel-head h2{font-size:15px;color:var(--bsn);font-weight:700}
-body.dark .panel-head h2{color:#9ec5ea}
-.panel-body{padding:14px 16px}
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.grid-3{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:16px}
-@media(max-width:1000px){.grid-2,.grid-3{grid-template-columns:1fr}}
-.btn{border:1px solid var(--line);background:var(--surface);color:var(--text);padding:10px 14px;border-radius:2px;font:inherit;font-size:13px;font-weight:700;cursor:pointer}
-.btn-primary{background:var(--bsn);color:#fff;border-color:var(--bsn)}
-.btn-primary:hover{background:var(--bsn-deep)}
-.btn-danger{background:var(--danger);color:#fff;border-color:var(--danger)}
-.btn-ghost{background:transparent;color:var(--bsn)}
-.btn-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-.pill{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;font-size:12px;font-weight:700;background:var(--bsn-soft);color:var(--muted);border:1px solid var(--line)}
-.pill.on{background:var(--success-bg);color:var(--success);border-color:#b7e0cc}
-.empty{text-align:center;color:var(--muted);font-size:14px;padding:36px 16px;line-height:1.6}
+body{font-family:'Libre Franklin',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+h1{font-size:22px;color:var(--bsn);margin-bottom:4px}
+.sub{color:var(--muted);font-size:14px;margin-bottom:16px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:14px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:12px;box-shadow:var(--shadow)}
+.stat .label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase}
+.stat .value{font-size:20px;font-weight:700;color:var(--bsn);margin-top:4px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:4px;box-shadow:var(--shadow);margin-bottom:14px}
+.ph{padding:12px 16px;border-bottom:1px solid var(--line);font-weight:700;color:var(--bsn);font-size:14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.pb{padding:16px}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+input,select{border:1px solid var(--line);border-radius:2px;padding:9px 11px;font:inherit;font-size:13px;background:var(--surface);color:var(--text)}
+.btn{border:none;border-radius:2px;padding:9px 12px;font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.btn-primary{background:var(--bsn);color:#fff}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--bsn)}
+.btn-danger{background:var(--danger);color:#fff}
 table{width:100%;border-collapse:collapse;font-size:13px}
-th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle}
-th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);background:var(--bsn-soft);font-weight:700}
-label{display:block;font-size:12px;font-weight:600;color:var(--bsn);margin:0 0 6px}
-body.dark label{color:#9ec5ea}
-input,select,textarea{
-  width:100%;border:1px solid var(--line);border-radius:2px;padding:10px 12px;font:inherit;font-size:14px;
-  background:var(--surface);color:var(--text);margin-bottom:12px
-}
-.badge{display:inline-block;padding:4px 10px;border-radius:2px;font-size:11px;font-weight:700}
-.badge.cleared,.badge.NORMAL{background:var(--success-bg);color:var(--success)}
-.badge.flagged,.badge.SUSPICIOUS,.badge.ADMIN{background:var(--danger-bg);color:var(--danger)}
-.badge.SUPER_ADMIN{background:#fff6e5;color:var(--warn)}
-.badge.USER{background:var(--bsn-soft);color:var(--bsn)}
-.badge.LOCK{background:var(--danger-bg);color:var(--danger)}
-.feed-item{border:1px solid var(--line);border-radius:2px;padding:12px;margin-bottom:10px;background:var(--bsn-soft);cursor:pointer;font-size:13px}
-.feed-item .row{display:flex;justify-content:space-between;gap:8px;margin-bottom:4px}
-.msg{margin-top:10px;padding:10px 12px;border-radius:2px;font-size:13px}
-.msg.ok{background:var(--success-bg);color:var(--success);border:1px solid #b7e0cc}
-.msg.err{background:var(--danger-bg);color:var(--danger);border:1px solid #f0b4ae}
-.filters{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin-bottom:14px}
-.filters > div{min-width:140px}
-canvas{max-width:100%}
-
+th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-size:11px;text-transform:uppercase;color:var(--muted);background:rgba(0,51,102,.06)}
+.badge{display:inline-block;padding:2px 7px;border-radius:2px;font-size:11px;font-weight:700}
+.badge.SUPER_ADMIN{background:#e8eef6;color:#003366}
+.badge.ADMIN{background:#e7f0fa;color:#0a4d8c}
+.badge.USER{background:#e8f6ef;color:#0f6b4c}
+.msg{font-size:13px;margin-top:10px;display:none}
+.msg.show{display:block}
+.msg.ok{color:var(--success)}
+.msg.err{color:var(--danger)}
 .hidden{display:none!important}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:700px){.row{grid-template-columns:1fr}}
-
-/* Mobile-first operational polish */
-@media (max-width: 768px) {
-  .navbar { flex-direction: column; align-items: flex-start !important; }
-  .nav-links { width: 100%; }
-  .nav-links a, .nav-links button { flex: 1 1 auto; text-align: center; }
-  .stats, .policy, .grid-2, .grid-3 { grid-template-columns: 1fr !important; }
-  table { display: block; overflow-x: auto; white-space: nowrap; }
-  .page { padding: 16px 12px 40px !important; }
-  canvas { max-width: 100% !important; height: auto !important; }
-  input, select, textarea, button { font-size: 16px !important; } /* prevent iOS zoom */
-}
-
+label{display:block;font-size:12px;font-weight:600;color:var(--bsn);margin:8px 0 4px}
 </style>
-<link rel="stylesheet" href="css/page-transitions.css">
-<script>(function(){try{if(localStorage.getItem("theme")==="dark")document.documentElement.classList.add("dark");}catch(e){}})();</script>
-<link rel="stylesheet" href="css/theme-dark.css">
-<script src="js/theme.js" defer></script>
-
-<link rel="stylesheet" href="css/app-shell.css">
-<script>(function(){try{if(localStorage.getItem("theme")==="dark")document.documentElement.classList.add("dark");}catch(e){}})();</script>
-<link rel="stylesheet" href="css/theme-dark.css">
 </head>
 <body>
-<div class="navbar">
-  <div class="brand"><div class="brand-mark">BSN</div><div><h2>BSN Fraud Detection</h2><span>User Management</span></div></div>
-  <div class="nav-links">
-    <span class="who" id="userName">Admin</span>
-    <a href="dashboard.html">Dashboard</a>
-    <a href="admin-review.html">Case Review</a>
-    <a href="checker.html">Checker</a>
-    <a href="history.html">History</a>
-    <a href="admin-reports.html">Reports</a>
-    <a class="active" href="admin-users.html">Users</a>
-    <a href="profile.html">Profile</a>
-    <button type="button" id="themeBtn" data-theme-btn onclick="toggleTheme()">Dark Mode</button>
-    <button type="button" class="logout-btn" onclick="logout()">Logout</button>
+<div style="max-width:1100px;margin:0 auto;padding:8px 0 40px">
+  <h1>Users &amp; admin control</h1>
+  <p class="sub">Signed in as <strong id="whoLabel">—</strong></p>
 
-  </div>
-</div>
-<div class="page">
-  <div class="page-title">
-    <h1>Users & admin control</h1>
-    <p>Signed in as <strong id="whoRole">—</strong></p>
-  </div>
-  <div class="stats" id="stats">
+  <div class="stats">
     <div class="stat"><div class="label">Total users</div><div class="value" id="sTotal">0</div></div>
     <div class="stat"><div class="label">Customers</div><div class="value" id="sUsers">0</div></div>
     <div class="stat"><div class="label">Admins</div><div class="value" id="sAdmins">0</div></div>
     <div class="stat"><div class="label">SuperAdmins</div><div class="value" id="sSuper">0</div></div>
-    <div class="stat flag"><div class="label">Locked</div><div class="value" id="sLocked">0</div></div>
-    <div class="stat flag"><div class="label">Flagged tx</div><div class="value" id="sFlag">0</div></div>
+    <div class="stat"><div class="label">Locked</div><div class="value" id="sLocked">0</div></div>
+    <div class="stat"><div class="label">Flagged tx</div><div class="value" id="sFlag">0</div></div>
   </div>
 
   <div class="panel hidden" id="superPanel">
-    <div class="panel-head"><h2>SuperAdmin · Add admin account</h2></div>
-    <div class="panel-body">
-      <div class="row">
-        <div><label>Full name</label><input id="aFullName" placeholder="Admin full name"></div>
-        <div><label>Username</label><input id="aUsername" placeholder="admin.username"></div>
-        <div><label>Email</label><input id="aEmail" type="email" placeholder="admin@example.com"></div>
-        <div><label>Temporary password</label><input id="aPassword" type="text" placeholder="Min 8 characters"></div>
+    <div class="ph">Create admin account (SuperAdmin only)</div>
+    <div class="pb">
+      <div class="toolbar">
+        <input id="aFullName" placeholder="Full name">
+        <input id="aUsername" placeholder="Username">
+        <input id="aEmail" placeholder="Email">
+        <input id="aPassword" type="password" placeholder="Temp password">
+        <button type="button" class="btn btn-primary" id="btnCreateAdmin">Create admin</button>
       </div>
-      <button class="btn btn-primary" type="button" id="btnCreateAdmin">Create ADMIN</button>
-      <div id="createMsg" class="msg" style="display:none"></div>
+      <div class="msg" id="createMsg"></div>
     </div>
   </div>
 
   <div class="panel">
-    <div class="panel-head">
-      <h2>All accounts</h2>
-      <div class="btn-row">
+    <div class="ph">
+      <span>All accounts</span>
+      <div class="toolbar">
         <select id="roleFilter">
           <option value="ALL">All roles</option>
-          <option value="USER">USER</option>
-          <option value="ADMIN">ADMIN</option>
-          <option value="SUPER_ADMIN">SUPER_ADMIN</option>
+          <option value="USER">Customers</option>
+          <option value="ADMIN">Admins</option>
+          <option value="SUPER_ADMIN">SuperAdmins</option>
         </select>
-        <input id="search" placeholder="Search username / email / name" style="margin:0;min-width:200px">
-        <button class="btn" type="button" onclick="loadAll()">Refresh</button>
+        <input id="search" placeholder="Search username / email / name">
+        <button type="button" class="btn btn-ghost" id="btnRefresh">Refresh</button>
       </div>
     </div>
-    <div class="panel-body" style="overflow:auto">
+    <div class="pb" style="padding-top:0;overflow:auto">
       <table>
-        <thead><tr>
-          <th>User</th><th>Role</th><th>Account</th><th>Activity</th><th>Risk</th><th>Actions</th>
-        </tr></thead>
-        <tbody id="tbody"><tr><td colspan="6">Loading…</td></tr></tbody>
+        <thead>
+          <tr>
+            <th>User</th><th>Role</th><th>Account</th><th>Activity</th><th>Risk</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tbody">
+          <tr><td colspan="6">Loading…</td></tr>
+        </tbody>
       </table>
-      <div id="tableMsg" class="msg" style="display:none"></div>
+      <div class="msg" id="tableMsg"></div>
     </div>
   </div>
 </div>
+
+<script src="js/theme.js"></script>
+<script src="js/app-shell.js"></script>
+<script src="js/page-transitions.js"></script>
 <script>
-const API = "https://fraud-detection-system-j4bg.onrender.com";
-const role = (sessionStorage.getItem("role") || "").toUpperCase();
-const username = sessionStorage.getItem("username") || "";
-const isLoggedIn = sessionStorage.getItem("isLoggedIn") === "true";
+(function () {
+  const API = "https://fraud-detection-system-j4bg.onrender.com";
+  const role = (sessionStorage.getItem("role") || "").toUpperCase();
+  const username = sessionStorage.getItem("username") || "";
+  const fullName = sessionStorage.getItem("fullName") || "";
+  const isLoggedIn = sessionStorage.getItem("isLoggedIn") === "true";
 
-if (!isLoggedIn || (role !== "ADMIN" && role !== "SUPER_ADMIN")) {
-  window.location.href = "access.html";
-}
-
-document.getElementById("who").textContent = username || "Admin";
-document.getElementById("whoRole").textContent = role;
-if (role === "SUPER_ADMIN") {
-  document.getElementById("superPanel").classList.remove("hidden");
-}
-
-function logout() {
-  sessionStorage.clear();
-  window.location.href = "access.html";
-}
-
-function showMsg(id, text, ok) {
-  const el = document.getElementById(id);
-  el.textContent = text;
-  el.className = "msg show " + (ok ? "ok" : "err");
-}
-
-let allRows = [];
-
-async function loadSummary() {
-  try {
-    const res = await fetch(API + "/api/admin/users/summary");
-    const d = await res.json();
-    document.getElementById("sTotal").textContent = d.totalUsers ?? 0;
-    document.getElementById("sUsers").textContent = d.userAccounts ?? 0;
-    document.getElementById("sAdmins").textContent = d.adminAccounts ?? 0;
-    document.getElementById("sSuper").textContent = d.superAdminAccounts ?? 0;
-    document.getElementById("sLocked").textContent = d.lockedAccounts ?? 0;
-    document.getElementById("sFlag").textContent = d.flaggedTransactions ?? 0;
-  } catch (e) {
-    showMsg("tableMsg", "Could not load summary. Is the server awake?", false);
-  }
-}
-
-async function loadList() {
-  const res = await fetch(API + "/api/admin/users/list");
-  allRows = await res.json();
-  renderTable();
-}
-
-function renderTable() {
-  const q = (document.getElementById("search").value || "").toLowerCase();
-  const rf = document.getElementById("roleFilter").value;
-  const tb = document.getElementById("tbody");
-  const rows = allRows.filter(u => {
-    const r = String(u.role || "").toUpperCase();
-    if (rf !== "ALL" && r !== rf) return false;
-    const blob = `${u.username||""} ${u.email||""} ${u.fullName||""}`.toLowerCase();
-    return !q || blob.includes(q);
-  });
-  if (!rows.length) {
-    tb.innerHTML = `<tr><td colspan="6">No users found</td></tr>`;
+  if (!isLoggedIn || (role !== "ADMIN" && role !== "SUPER_ADMIN")) {
+    location.href = "access.html";
     return;
   }
-  tb.innerHTML = rows.map(u => {
-    const r = String(u.role || "USER").toUpperCase();
-    const locked = !!u.locked;
-    let actions = "";
-    if (locked) {
-      actions += `<button class="small" onclick="unlockUser(${u.id})">Unlock</button> `;
-    }
-    if (role === "SUPER_ADMIN" && r === "ADMIN") {
-      actions += `<button class="danger" onclick="removeAdmin(${u.id}, '${(u.username||"").replace(/'/g,"")}')">Remove admin</button>`;
-    }
-    if (!actions) actions = "—";
-    return `<tr>
-      <td>
-        <b>${u.fullName || u.username || "—"}</b><br>
-        <span style="color:#5c6b7c">${u.username || ""}</span><br>
-        <span style="color:#5c6b7c;font-size:12px">${u.email || ""}</span>
-      </td>
-      <td>
-        <span class="badge ${r}">${r}</span>
-        ${locked ? '<br><span class="badge LOCK">LOCKED</span>' : ''}
-      </td>
-      <td>${u.accountNumber || "—"}</td>
-      <td style="font-size:12px;color:#5c6b7c">
-        Last login:<br>${u.lastLoginAt || "Never"}
-      </td>
-      <td style="font-size:12px">
-        Tx: <b>${u.txCount ?? 0}</b><br>
-        Flagged: <b>${u.txFlagged ?? 0}</b>
-      </td>
-      <td>${actions}</td>
-    </tr>`;
-  }).join("");
-}
 
-async function loadAll() {
-  await loadSummary();
-  await loadList();
-}
+  const whoText = (fullName || username || "Admin") + " · " + (role || "STAFF");
+  const whoEl = document.getElementById("whoLabel");
+  if (whoEl) whoEl.textContent = whoText;
 
-async function unlockUser(id) {
-  try {
-    const res = await fetch(API + "/api/admin/users/" + id + "/unlock", { method: "PUT" });
-    const d = await res.json();
-    showMsg("tableMsg", d.message || "Done", !!d.success);
-    await loadAll();
-  } catch (e) {
-    showMsg("tableMsg", "Unlock failed — server offline?", false);
+  if (role === "SUPER_ADMIN") {
+    const panel = document.getElementById("superPanel");
+    if (panel) panel.classList.remove("hidden");
   }
-}
 
-async function removeAdmin(id, name) {
-  if (!confirm("Remove admin account \"" + name + "\"? This cannot be undone.")) return;
-  try {
-    const url = API + "/api/admin/users/admins/" + id + "?actorUsername=" + encodeURIComponent(username);
-    const res = await fetch(url, { method: "DELETE" });
-    const d = await res.json();
-    showMsg("tableMsg", d.message || "Done", !!d.success);
-    await loadAll();
-  } catch (e) {
-    showMsg("tableMsg", "Remove failed — server offline?", false);
+  function showMsg(id, text, ok) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = text || "";
+    el.className = "msg show " + (ok ? "ok" : "err");
   }
-}
 
-document.getElementById("btnCreateAdmin")?.addEventListener("click", async () => {
-  const body = {
-    actorUsername: username,
-    fullName: document.getElementById("aFullName").value.trim(),
-    username: document.getElementById("aUsername").value.trim(),
-    email: document.getElementById("aEmail").value.trim(),
-    password: document.getElementById("aPassword").value
-  };
-  try {
-    const res = await fetch(API + "/api/admin/users/admins", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body)
+  let allRows = [];
+
+  async function loadSummary() {
+    try {
+      const res = await fetch(API + "/api/admin/users/summary");
+      if (!res.ok) throw new Error("summary " + res.status);
+      const d = await res.json();
+      document.getElementById("sTotal").textContent = d.totalUsers ?? 0;
+      document.getElementById("sUsers").textContent = d.userAccounts ?? 0;
+      document.getElementById("sAdmins").textContent = d.adminAccounts ?? 0;
+      document.getElementById("sSuper").textContent = d.superAdminAccounts ?? 0;
+      document.getElementById("sLocked").textContent = d.lockedAccounts ?? 0;
+      document.getElementById("sFlag").textContent = d.flaggedTransactions ?? 0;
+    } catch (e) {
+      showMsg("tableMsg", "Could not load summary. Server may be waking up.", false);
+    }
+  }
+
+  async function loadList() {
+    const tb = document.getElementById("tbody");
+    try {
+      const res = await fetch(API + "/api/admin/users/list");
+      if (!res.ok) throw new Error("list HTTP " + res.status);
+      const data = await res.json();
+      if (!Array.isArray(data)) {
+        throw new Error("List response is not an array");
+      }
+      allRows = data;
+      renderTable();
+      if (allRows.length === 0) {
+        showMsg("tableMsg", "No users in database yet.", false);
+      } else {
+        showMsg("tableMsg", allRows.length + " account(s) loaded.", true);
+      }
+    } catch (e) {
+      console.error(e);
+      tb.innerHTML = "<tr><td colspan='6'>Failed to load users: " + (e.message || e) + "</td></tr>";
+      showMsg("tableMsg", "List failed. Check API /api/admin/users/list", false);
+    }
+  }
+
+  function renderTable() {
+    const q = (document.getElementById("search").value || "").toLowerCase();
+    const rf = document.getElementById("roleFilter").value;
+    const tb = document.getElementById("tbody");
+    const rows = allRows.filter(function (u) {
+      const r = String(u.role || "").toUpperCase();
+      if (rf !== "ALL" && r !== rf) return false;
+      if (!q) return true;
+      const blob = [u.username, u.email, u.fullName, u.accountNumber].join(" ").toLowerCase();
+      return blob.indexOf(q) >= 0;
     });
-    const d = await res.json();
-    showMsg("createMsg", d.message || (d.success ? "Created" : "Failed"), !!d.success);
-    if (d.success) {
-      document.getElementById("aFullName").value = "";
-      document.getElementById("aUsername").value = "";
-      document.getElementById("aEmail").value = "";
-      document.getElementById("aPassword").value = "";
-      await loadAll();
+
+    if (!rows.length) {
+      tb.innerHTML = "<tr><td colspan='6'>No accounts match this filter.</td></tr>";
+      return;
     }
-  } catch (e) {
-    showMsg("createMsg", "Server offline or waking up", false);
+
+    tb.innerHTML = rows.map(function (u) {
+      const r = String(u.role || "USER").toUpperCase();
+      const locked = u.locked ? " · LOCKED" : "";
+      const name = u.fullName || u.username || "—";
+      const last = u.lastLoginAt ? String(u.lastLoginAt).replace("T", " ").substring(0, 19) : "Never";
+      const flagged = u.flaggedCount != null ? u.flaggedCount : 0;
+      const total = u.txCount != null ? u.txCount : 0;
+      let actions = "";
+      if (u.locked) {
+        actions += "<button type='button' class='btn btn-ghost' data-unlock='" + u.id + "'>Unlock</button> ";
+      }
+      if (role === "SUPER_ADMIN" && r === "ADMIN") {
+        actions += "<button type='button' class='btn btn-danger' data-remove='" + u.id + "'>Remove</button>";
+      }
+      if (!actions) actions = "—";
+      return "<tr>" +
+        "<td><strong>" + name + "</strong><br><span style='color:var(--muted);font-size:12px'>" +
+        (u.username || "") + "<br>" + (u.email || "") + "</span></td>" +
+        "<td><span class='badge " + r + "'>" + r + locked + "</span></td>" +
+        "<td>" + (u.accountNumber || "—") + "</td>" +
+        "<td>Last login: " + last + "</td>" +
+        "<td>" + flagged + " flagged / " + total + " tx</td>" +
+        "<td>" + actions + "</td>" +
+        "</tr>";
+    }).join("");
   }
-});
 
-document.getElementById("roleFilter").addEventListener("change", renderTable);
-document.getElementById("search").addEventListener("input", renderTable);
+  async function loadAll() {
+    await loadSummary();
+    await loadList();
+  }
 
-loadAll();
+  document.getElementById("tbody").addEventListener("click", async function (e) {
+    const unlockId = e.target.getAttribute("data-unlock");
+    const removeId = e.target.getAttribute("data-remove");
+    if (unlockId) {
+      try {
+        const res = await fetch(API + "/api/admin/users/" + unlockId + "/unlock", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ actorUsername: username })
+        });
+        const d = await res.json();
+        showMsg("tableMsg", d.message || "Unlocked", !!d.success);
+        await loadAll();
+      } catch (err) {
+        showMsg("tableMsg", "Unlock failed", false);
+      }
+    }
+    if (removeId) {
+      if (!confirm("Remove this admin account?")) return;
+      try {
+        const url = API + "/api/admin/users/admins/" + removeId + "?actorUsername=" + encodeURIComponent(username);
+        const res = await fetch(url, { method: "DELETE" });
+        const d = await res.json();
+        showMsg("tableMsg", d.message || "Done", !!d.success);
+        await loadAll();
+      } catch (err) {
+        showMsg("tableMsg", "Remove failed", false);
+      }
+    }
+  });
+
+  document.getElementById("btnCreateAdmin").addEventListener("click", async function () {
+    const body = {
+      actorUsername: username,
+      fullName: document.getElementById("aFullName").value.trim(),
+      username: document.getElementById("aUsername").value.trim(),
+      email: document.getElementById("aEmail").value.trim(),
+      password: document.getElementById("aPassword").value
+    };
+    try {
+      const res = await fetch(API + "/api/admin/users/admins", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+      const d = await res.json();
+      showMsg("createMsg", d.message || (d.success ? "Created" : "Failed"), !!d.success);
+      if (d.success) {
+        document.getElementById("aFullName").value = "";
+        document.getElementById("aUsername").value = "";
+        document.getElementById("aEmail").value = "";
+        document.getElementById("aPassword").value = "";
+        await loadAll();
+      }
+    } catch (e) {
+      showMsg("createMsg", "Server offline or waking up", false);
+    }
+  });
+
+  document.getElementById("roleFilter").addEventListener("change", renderTable);
+  document.getElementById("search").addEventListener("input", renderTable);
+  document.getElementById("btnRefresh").addEventListener("click", loadAll);
+
+  loadAll();
+})();
 </script>
-<script src="js/page-transitions.js" defer></script>
-
-<script src="js/theme.js" defer></script>
-<script src="js/app-shell.js" defer></script>
-<script src="js/page-transitions.js" defer></script>
 </body>
 </html>
