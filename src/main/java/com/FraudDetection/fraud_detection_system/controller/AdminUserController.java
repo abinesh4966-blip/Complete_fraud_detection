@@ -24,11 +24,6 @@ public class AdminUserController {
 
     @Autowired
     private TransactionRepository transactionRepository;
-            return hex.toString();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     private User requireActor(String actorUsername) {
         if (actorUsername == null || actorUsername.isBlank()) return null;

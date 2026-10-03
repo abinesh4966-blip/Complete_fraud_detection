@@ -28,20 +28,21 @@ public class User {
     private String accountNumber;
 
     private int failedAttempts = 0;
-
-    /** How many times this account has been lockout-escalated */
     private int lockoutLevel = 0;
-
     private LocalDateTime lockoutUntil;
-
     private LocalDateTime createdAt;
-
     private LocalDateTime lastLoginAt;
-
     private boolean emailVerified = false;
-
-    /** Force password change on next login (new admins) */
     private boolean mustChangePassword = false;
+
+    /** Optional phone for contact */
+    private String phone;
+
+    /** data:image/...;base64,... or relative path — keep small */
+    @Column(length = 350000)
+    private String profileImage;
+
+    private LocalDateTime profileUpdatedAt;
 
     public User() {}
 
@@ -86,4 +87,13 @@ public class User {
 
     public boolean isMustChangePassword() { return mustChangePassword; }
     public void setMustChangePassword(boolean mustChangePassword) { this.mustChangePassword = mustChangePassword; }
+
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
+
+    public String getProfileImage() { return profileImage; }
+    public void setProfileImage(String profileImage) { this.profileImage = profileImage; }
+
+    public LocalDateTime getProfileUpdatedAt() { return profileUpdatedAt; }
+    public void setProfileUpdatedAt(LocalDateTime profileUpdatedAt) { this.profileUpdatedAt = profileUpdatedAt; }
 }

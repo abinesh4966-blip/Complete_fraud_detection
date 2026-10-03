@@ -106,6 +106,7 @@ canvas{max-width:100%}
 }
 
 </style>
+<link rel="stylesheet" href="css/page-transitions.css">
 </head>
 <body>
 <div class="navbar">
@@ -113,9 +114,12 @@ canvas{max-width:100%}
   <div class="nav-links">
     <span class="who" id="who">Admin</span>
     <a href="dashboard.html">Dashboard</a>
+    <a href="checker.html">Checker</a>
     <a href="history.html">History</a>
+    <a href="admin-review.html">Case Review</a>
     <a href="admin-reports.html">Reports</a>
     <a class="active" href="admin-users.html">Users</a>
+    <a href="profile.html">Profile</a>
     <button type="button" class="logout-btn" onclick="logout()">Logout</button>
   </div>
 </div>
@@ -332,5 +336,6 @@ document.getElementById("search").addEventListener("input", renderTable);
 
 loadAll();
 </script>
+<script src="js/page-transitions.js" defer></script>
 </body>
 </html>

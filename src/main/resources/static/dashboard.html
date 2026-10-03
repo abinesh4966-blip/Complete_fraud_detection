@@ -107,6 +107,7 @@ canvas{max-width:100%}
 }
 
 </style>
+<link rel="stylesheet" href="css/page-transitions.css">
 </head>
 <body>
 <div class="navbar">
@@ -120,6 +121,7 @@ canvas{max-width:100%}
     <a href="admin-reports.html">Reports</a>
     <a href="admin-users.html">Users</a>
     <button type="button" id="themeBtn" onclick="toggleTheme()">Dark Mode</button>
+    <a href="profile.html">Profile</a>
     <button type="button" class="logout-btn" onclick="logout()">Logout</button>
   </div>
 </div>
@@ -585,5 +587,6 @@ const __role = (sessionStorage.getItem("role") || "").toUpperCase();
         loadDashboard();
         refreshMlStatus();
 </script>
+<script src="js/page-transitions.js" defer></script>
 </body>
 </html>

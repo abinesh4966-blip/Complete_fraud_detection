@@ -2,6 +2,9 @@ package com.FraudDetection.fraud_detection_system.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -34,7 +37,7 @@ public class Transaction {
     private LocalDateTime reviewedAt;
     private String reviewNote;
 
-    /** JSON array of reason strings (persisted for audit/explainability) */
+    /** Persisted reasons, separated by || */
     @Column(length = 4000)
     private String reasonsJson;
 
@@ -94,39 +97,24 @@ public class Transaction {
     public void setReviewNote(String reviewNote) { this.reviewNote = reviewNote; }
 
     public List<String> getReasons() {
-        if (reasons != null) return reasons;
-        if (reasonsJson == null || reasonsJson.isBlank()) return java.util.List.of();
-        try {
-            // simple parse: stored as line-separated or JSON-ish
-            if (reasonsJson.trim().startsWith("[")) {
-                String body = reasonsJson.trim();
-                body = body.substring(1, body.length()-1);
-                java.util.List<String> out = new java.util.ArrayList<>();
-                for (String part : body.split("","")) {
-                    String s = part.replace("\"", """).replaceAll("^\s*"|"\s*$", "").trim();
-                    if (!s.isEmpty()) out.add(s);
-                }
-                return out;
-            }
-            return java.util.Arrays.asList(reasonsJson.split("\|\|"));
-        } catch (Exception e) {
-            return java.util.List.of(reasonsJson);
+        if (reasons != null) {
+            return reasons;
         }
+        if (reasonsJson == null || reasonsJson.isBlank()) {
+            return Collections.emptyList();
+        }
+        return new ArrayList<>(Arrays.asList(reasonsJson.split(java.util.regex.Pattern.quote("||"))));
     }
+
     public void setReasons(List<String> reasons) {
         this.reasons = reasons;
         if (reasons == null || reasons.isEmpty()) {
             this.reasonsJson = null;
         } else {
-            StringBuilder sb = new StringBuilder("[");
-            for (int i = 0; i < reasons.size(); i++) {
-                if (i > 0) sb.append(',');
-                sb.append('"').append(reasons.get(i).replace(""", "'")).append('"');
-            }
-            sb.append(']');
-            this.reasonsJson = sb.toString();
+            this.reasonsJson = String.join("||", reasons);
         }
     }
+
     public String getReasonsJson() { return reasonsJson; }
     public void setReasonsJson(String reasonsJson) { this.reasonsJson = reasonsJson; }
 }

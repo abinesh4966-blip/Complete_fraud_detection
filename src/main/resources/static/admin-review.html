@@ -40,6 +40,7 @@ textarea{width:100%;border:1px solid var(--line);border-radius:2px;padding:8px;f
 }
 
 </style>
+<link rel="stylesheet" href="css/page-transitions.css">
 </head>
 <body>
 <div class="navbar">
@@ -47,8 +48,11 @@ textarea{width:100%;border:1px solid var(--line);border-radius:2px;padding:8px;f
   <div class="nav-links">
     <a href="dashboard.html">Dashboard</a>
     <a class="active" href="admin-review.html">Case Review</a>
-    <a href="admin-reports.html">Reports</a>
+    <a href="checker.html">Checker</a>
     <a href="history.html">History</a>
+    <a href="admin-reports.html">Reports</a>
+    <a href="admin-users.html">Users</a>
+    <a href="profile.html">Profile</a>
     <button onclick="logout()">Logout</button>
   </div>
 </div>
@@ -82,5 +86,6 @@ async function decide(id, decision){
 }
 load();
 </script>
+<script src="js/page-transitions.js" defer></script>
 </body>
 </html>

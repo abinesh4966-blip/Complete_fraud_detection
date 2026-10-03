@@ -89,6 +89,7 @@ input,select,textarea{
 .filters > div{min-width:140px}
 canvas{max-width:100%}
 </style>
+<link rel="stylesheet" href="css/page-transitions.css">
 </head>
 <body>
 <div class="navbar">
@@ -99,6 +100,7 @@ canvas{max-width:100%}
     <a href="user-transactions.html">My Transactions</a>
     <a href="user-alerts.html">Alerts</a>
     <a class="active" href="user-report.html">Report</a>
+    <a href="profile.html">Profile</a>
     <button type="button" class="logout-btn" onclick="logout()">Logout</button>
   </div>
 </div>
@@ -152,5 +154,6 @@ if (sessionStorage.getItem("isLoggedIn") !== "true" || sessionStorage.getItem("r
             document.getElementById("txId").value = "";
         }
 </script>
+<script src="js/page-transitions.js" defer></script>
 </body>
 </html>

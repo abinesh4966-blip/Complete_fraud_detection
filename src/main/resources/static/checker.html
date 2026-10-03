@@ -121,6 +121,7 @@ html.auth-ok body{visibility:visible}
   }catch(e){window.location.replace("access.html");}
 })();
 </script>
+<link rel="stylesheet" href="css/page-transitions.css">
 </head>
 <body>
 <div class="navbar">
@@ -128,9 +129,12 @@ html.auth-ok body{visibility:visible}
   <div class="nav-links">
     <span class="who" id="userName">Admin</span>
     <a href="dashboard.html">Dashboard</a>
+    <a href="admin-review.html">Case Review</a>
     <a class="active" href="checker.html">Checker</a>
     <a href="history.html">History</a>
+    <a href="admin-reports.html">Reports</a>
     <a href="admin-users.html">Users</a>
+    <a href="profile.html">Profile</a>
     <button type="button" class="logout-btn" onclick="logout()">Logout</button>
   </div>
 </div>
@@ -182,7 +186,8 @@ html.auth-ok body{visibility:visible}
       <span id="userName" style="opacity:.9;font-size:13px"></span>
       <a href="dashboard.html">Dashboard</a>
       <a href="history.html">History</a>
-      <a href="admin-users.html">Users</a>
+      <a href="admin-reports.html">Reports</a>
+    <a href="admin-users.html">Users</a>
       <a href="checker.html">Checker</a>
       <button type="button" onclick="logout()">Logout</button>
     </div>
@@ -291,5 +296,6 @@ async function checkTransaction() {
   }
 }
 </script>
+<script src="js/page-transitions.js" defer></script>
 </body>
 </html>

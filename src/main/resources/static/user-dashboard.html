@@ -469,6 +469,7 @@ body.dark tbody tr:hover { background: rgba(255,255,255,0.03); }
 }
 
 </style>
+<link rel="stylesheet" href="css/page-transitions.css">
 </head>
 <body>
   <div class="navbar">
@@ -486,7 +487,8 @@ body.dark tbody tr:hover { background: rgba(255,255,255,0.03); }
       <a href="user-alerts.html">Alerts</a>
       <a href="user-report.html">Report</a>
       <button type="button" id="themeBtn" onclick="toggleTheme()">Dark Mode</button>
-      <button type="button" class="logout-btn" onclick="logout()">Logout</button>
+      <a href="profile.html">Profile</a>
+    <button type="button" class="logout-btn" onclick="logout()">Logout</button>
     </div>
   </div>
 
@@ -753,5 +755,6 @@ async function clearMyData() {
 window.addEventListener("beforeunload", stopUserLiveDemo);
 loadUserData();
 </script>
+<script src="js/page-transitions.js" defer></script>
 </body>
 </html>
