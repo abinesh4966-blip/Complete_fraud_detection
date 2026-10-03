@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Dashboard · BSN FDS</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link rel="stylesheet" href="css/app-shell.css">
 <link rel="stylesheet" href="css/theme-dark.css">
 <link rel="stylesheet" href="css/page-transitions.css">
@@ -20,16 +19,15 @@
 body{font-family:'Libre Franklin',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 h1{font-size:22px;color:var(--bsn);margin-bottom:6px}
 .sub{color:var(--muted);font-size:14px;margin-bottom:18px}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:16px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+@media(max-width:800px){.stats{grid-template-columns:repeat(2,1fr)}}
 .stat{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:14px;box-shadow:var(--shadow)}
 .stat .label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase}
 .stat .value{font-size:22px;font-weight:700;color:var(--bsn);margin-top:6px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
-@media(max-width:900px){.grid{grid-template-columns:1fr}}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:4px;box-shadow:var(--shadow);margin-bottom:14px}
 .ph{padding:12px 16px;border-bottom:1px solid var(--line);font-weight:700;color:var(--bsn);font-size:14px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
 .pb{padding:16px}
-.btn{border:none;border-radius:2px;padding:10px 14px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;margin:4px 4px 4px 0}
+.btn{border:none;border-radius:2px;padding:10px 14px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;margin:4px 6px 4px 0}
 .btn-primary{background:var(--bsn);color:#fff}
 .btn-primary:hover{background:var(--bsn-deep)}
 .btn-danger{background:var(--danger);color:#fff}
@@ -37,22 +35,28 @@ h1{font-size:22px;color:var(--bsn);margin-bottom:6px}
 .btn:disabled{opacity:.55;cursor:not-allowed}
 .status{font-size:12px;font-weight:700;color:var(--muted)}
 .status.active{color:var(--success)}
-.feed{max-height:320px;overflow:auto}
-.item{border:1px solid var(--line);border-radius:2px;padding:10px 12px;margin-bottom:8px;font-size:13px;cursor:pointer}
+.feed{max-height:340px;overflow:auto;margin-top:12px}
+.item{border:1px solid var(--line);border-radius:2px;padding:10px 12px;margin-bottom:8px;font-size:13px}
 .item.flagged{border-color:#f0b4ae;background:#fdecea}
 .item.pending{border-color:#f0d78c;background:#fff8e8}
 .item.cleared{border-color:#b7e0cc;background:#e8f6ef}
+html.dark .item.flagged, body.dark .item.flagged{background:#3a1c1c;border-color:#6a3030;color:var(--text)}
+html.dark .item.pending, body.dark .item.pending{background:#3a3218;border-color:#6a5a20;color:var(--text)}
+html.dark .item.cleared, body.dark .item.cleared{background:#1a3328;border-color:#2a5540;color:var(--text)}
 .item .row{display:flex;justify-content:space-between;gap:8px;font-weight:700}
 .item .meta{font-size:12px;color:var(--muted);margin-top:4px}
-.charts{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.charts{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 @media(max-width:900px){.charts{grid-template-columns:1fr}}
-canvas{max-height:220px}
+.chart-box{position:relative;height:240px;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:10px}
+.chart-box canvas{width:100%!important;height:100%!important}
 .msg{font-size:13px;color:var(--muted);margin-top:8px}
-input[type=file]{font-size:13px}
+.grid2{display:grid;grid-template-columns:1.2fr 1fr;gap:14px}
+@media(max-width:900px){.grid2{grid-template-columns:1fr}}
+input[type=file]{font-size:13px;color:var(--text)}
 </style>
 </head>
 <body>
-  <div class="wrap" style="max-width:1100px;margin:0 auto;padding:8px 0 40px">
+  <div style="max-width:1100px;margin:0 auto;padding:8px 0 40px">
     <h1>Operations dashboard</h1>
     <p class="sub">Live monitoring, portfolio stats, and case overview for BSN Fraud Detection.</p>
 
@@ -72,17 +76,20 @@ input[type=file]{font-size:13px}
         <button type="button" class="btn btn-primary" id="btnStartLive">Start Live</button>
         <button type="button" class="btn btn-danger" id="btnStopLive" style="display:none">Stop Live</button>
         <button type="button" class="btn btn-ghost" id="btnRefresh">Refresh stats</button>
-        <p class="msg" id="liveMsg">Click Start Live to generate sample transactions through the detection engine.</p>
+        <p class="msg" id="liveMsg">Click <strong>Start Live</strong> to stream sample transactions through the detection engine.</p>
         <div class="feed" id="liveFeed"><div class="msg">No live events yet.</div></div>
       </div>
     </div>
 
-    <div class="grid">
+    <div class="grid2">
       <div class="panel">
         <div class="ph">Portfolio charts</div>
-        <div class="pb charts">
-          <canvas id="pieChart"></canvas>
-          <canvas id="barChart"></canvas>
+        <div class="pb">
+          <div class="charts">
+            <div class="chart-box"><canvas id="pieChart"></canvas></div>
+            <div class="chart-box"><canvas id="barChart"></canvas></div>
+          </div>
+          <p class="msg" id="chartMsg">Loading charts…</p>
         </div>
       </div>
       <div class="panel">
@@ -103,6 +110,7 @@ input[type=file]{font-size:13px}
     </div>
   </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script src="js/theme.js"></script>
 <script src="js/app-shell.js"></script>
 <script src="js/page-transitions.js"></script>
@@ -118,6 +126,7 @@ input[type=file]{font-size:13px}
   let liveTimer = null;
   let pieChart = null;
   let barChart = null;
+  let lastStats = { normal: 0, pending: 0, flagged: 0 };
 
   function $(id) { return document.getElementById(id); }
 
@@ -141,35 +150,45 @@ input[type=file]{font-size:13px}
     if (status === "SUSPICIOUS") { cls = "flagged"; label = "FLAGGED"; }
     else if (status === "PENDING_REVIEW") { cls = "pending"; label = "PENDING REVIEW"; }
     let reasons = tx.reasons;
-    if ((!reasons || !reasons.length) && tx.reasonsJson) reasons = String(tx.reasonsJson).split("||");
-    if (!reasons || !reasons.length) reasons = ["Processed"];
+    if ((!reasons || !reasons.length) && tx.reasonsJson) {
+      reasons = String(tx.reasonsJson).split("||").filter(Boolean);
+    }
+    if (!reasons || !reasons.length) reasons = ["Processed by detection engine"];
     const el = document.createElement("div");
     el.className = "item " + cls;
     el.innerHTML =
       '<div class="row"><span>ACC ' + acc + '</span><span>RM ' + amt + '</span></div>' +
       '<div class="meta">' + label + " — " + score + "% · " + level + "</div>" +
-      '<div class="meta">' + reasons.slice(0, 2).join(" · ") + "</div>";
+      '<div class="meta">' + reasons.slice(0, 2).map(function (r) { return String(r); }).join(" · ") + "</div>";
     feed.insertBefore(el, feed.firstChild);
     while (feed.children.length > 40) feed.removeChild(feed.lastChild);
   }
 
   async function generateOne() {
+    $("liveMsg").textContent = "Requesting sample transaction…";
     try {
-      let res = await fetch(API + "/api/transactions/generate", { method: "GET", headers: { "Accept": "application/json" } });
+      let res = await fetch(API + "/api/transactions/generate", {
+        method: "GET",
+        headers: { "Accept": "application/json" }
+      });
       if (!res.ok) {
-        res = await fetch(API + "/api/transactions/generate", { method: "POST", headers: { "Accept": "application/json" } });
+        res = await fetch(API + "/api/transactions/generate", {
+          method: "POST",
+          headers: { "Accept": "application/json" }
+        });
       }
       if (!res.ok) {
-        $("liveMsg").textContent = "Generate failed (HTTP " + res.status + "). Is the server awake?";
+        $("liveMsg").textContent = "Generate failed (HTTP " + res.status + "). Wait for Render to wake, then try again.";
         return;
       }
       const tx = await res.json();
       if (!tx || tx.accountNumber == null) {
-        $("liveMsg").textContent = "Generate returned an empty payload.";
+        $("liveMsg").textContent = "Server returned an invalid transaction. Check /api/transactions/generate";
+        console.warn(tx);
         return;
       }
       addFeed(tx, "liveFeed");
-      $("liveMsg").textContent = "Last event: ACC " + tx.accountNumber + " · RM " + Number(tx.amount).toFixed(2);
+      $("liveMsg").textContent = "Last: ACC " + tx.accountNumber + " · RM " + Number(tx.amount).toFixed(2) + " · " + (tx.status || "");
       await loadStats();
     } catch (e) {
       console.error(e);
@@ -182,53 +201,97 @@ input[type=file]{font-size:13px}
     setLiveUi(true);
     $("liveMsg").textContent = "Live monitoring started…";
     generateOne();
-    liveTimer = setInterval(generateOne, 3200);
+    liveTimer = setInterval(generateOne, 3500);
   }
 
   function stopLive() {
-    if (liveTimer) { clearInterval(liveTimer); liveTimer = null; }
+    if (liveTimer) {
+      clearInterval(liveTimer);
+      liveTimer = null;
+    }
     setLiveUi(false);
     $("liveMsg").textContent = "Live monitoring stopped.";
+  }
+
+  function chartColors() {
+    const dark = document.body.classList.contains("dark") || document.documentElement.classList.contains("dark");
+    return {
+      text: dark ? "#c5d4e8" : "#5c6b7c",
+      grid: dark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)",
+      slices: ["#1f7a54", "#c4921a", "#c0392b"]
+    };
+  }
+
+  function renderCharts(normal, pending, flagged) {
+    const msg = $("chartMsg");
+    if (typeof Chart === "undefined") {
+      msg.textContent = "Chart.js failed to load (CDN). Stats still work.";
+      return;
+    }
+    const pieCanvas = $("pieChart");
+    const barCanvas = $("barChart");
+    if (!pieCanvas || !barCanvas) return;
+
+    const c = chartColors();
+    const labels = ["Cleared", "Pending", "Flagged"];
+    const data = [normal, pending, flagged];
+
+    if (pieChart) pieChart.destroy();
+    if (barChart) barChart.destroy();
+
+    pieChart = new Chart(pieCanvas.getContext("2d"), {
+      type: "doughnut",
+      data: {
+        labels: labels,
+        datasets: [{ data: data, backgroundColor: c.slices, borderWidth: 0 }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: "bottom", labels: { color: c.text, boxWidth: 12 } }
+        }
+      }
+    });
+
+    barChart = new Chart(barCanvas.getContext("2d"), {
+      type: "bar",
+      data: {
+        labels: labels,
+        datasets: [{ label: "Transactions", data: data, backgroundColor: c.slices }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: c.text }, grid: { color: c.grid } },
+          y: { beginAtZero: true, ticks: { color: c.text, precision: 0 }, grid: { color: c.grid } }
+        }
+      }
+    });
+    msg.textContent = "Charts updated.";
   }
 
   async function loadStats() {
     try {
       const res = await fetch(API + "/api/transactions/stats");
+      if (!res.ok) throw new Error("stats HTTP " + res.status);
       const data = await res.json();
-      const total = data.total != null ? data.total : 0;
-      const normal = data.normal != null ? data.normal : 0;
-      const pending = data.pendingReview != null ? data.pendingReview : 0;
-      const flagged = data.suspicious != null ? data.suspicious : 0;
+      const normal = Number(data.normal || 0);
+      const pending = Number(data.pendingReview || 0);
+      const flagged = Number(data.suspicious || 0);
+      const total = Number(data.total != null ? data.total : normal + pending + flagged);
       $("statTotal").textContent = total;
       $("statCleared").textContent = normal;
       $("statPending").textContent = pending;
       $("statFlagged").textContent = flagged;
+      lastStats = { normal: normal, pending: pending, flagged: flagged };
       renderCharts(normal, pending, flagged);
     } catch (e) {
       console.error(e);
+      $("chartMsg").textContent = "Could not load stats.";
     }
-  }
-
-  function renderCharts(normal, pending, flagged) {
-    if (typeof Chart === "undefined") return;
-    const pie = $("pieChart");
-    const bar = $("barChart");
-    if (!pie || !bar) return;
-    const data = [normal, pending, flagged];
-    const labels = ["Cleared", "Pending", "Flagged"];
-    const colors = ["#0f6b4c", "#9a6b12", "#b42318"];
-    if (pieChart) pieChart.destroy();
-    if (barChart) barChart.destroy();
-    pieChart = new Chart(pie, {
-      type: "pie",
-      data: { labels: labels, datasets: [{ data: data, backgroundColor: colors }] },
-      options: { plugins: { legend: { position: "bottom" } } }
-    });
-    barChart = new Chart(bar, {
-      type: "bar",
-      data: { labels: labels, datasets: [{ label: "Count", data: data, backgroundColor: colors }] },
-      options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
-    });
   }
 
   async function retrainMl() {
@@ -236,7 +299,7 @@ input[type=file]{font-size:13px}
     try {
       const res = await fetch(API + "/api/transactions/ml/retrain", { method: "POST" });
       const data = await res.json();
-      $("toolMsg").textContent = data.message || JSON.stringify(data);
+      $("toolMsg").textContent = data.message || "Retrain done";
     } catch (e) {
       $("toolMsg").textContent = "Retrain failed";
     }
@@ -254,9 +317,9 @@ input[type=file]{font-size:13px}
   }
 
   async function resetAll() {
-    if (!confirm("Delete ALL transactions? This cannot be undone.")) return;
+    if (!confirm("Delete ALL transactions?")) return;
     const code = prompt("Type DELETE_ALL_DATA to confirm");
-    if (code !== "DELETE_ALL_DATA") { alert("Cancelled"); return; }
+    if (code !== "DELETE_ALL_DATA") return;
     try {
       const res = await fetch(API + "/api/transactions/clear-all?confirm=DELETE_ALL_DATA", { method: "DELETE" });
       const data = await res.json();
@@ -290,23 +353,43 @@ input[type=file]{font-size:13px}
     }
   }
 
-  // Bind buttons — addEventListener only (no fragile inline onclick)
-  $("btnStartLive").addEventListener("click", function (e) { e.preventDefault(); startLive(); });
-  $("btnStopLive").addEventListener("click", function (e) { e.preventDefault(); stopLive(); });
-  $("btnRefresh").addEventListener("click", function (e) { e.preventDefault(); loadStats(); });
-  $("btnRetrain").addEventListener("click", function (e) { e.preventDefault(); retrainMl(); });
-  $("btnResetMl").addEventListener("click", function (e) { e.preventDefault(); resetMl(); });
-  $("btnResetAll").addEventListener("click", function (e) { e.preventDefault(); resetAll(); });
-  $("btnUpload").addEventListener("click", function (e) { e.preventDefault(); uploadCsv(); });
+  // Bind after DOM is ready (script is at end of body so nodes exist)
+  $("btnStartLive").onclick = function () { startLive(); };
+  $("btnStopLive").onclick = function () { stopLive(); };
+  $("btnRefresh").onclick = function () { loadStats(); };
+  $("btnRetrain").onclick = function () { retrainMl(); };
+  $("btnResetMl").onclick = function () { resetMl(); };
+  $("btnResetAll").onclick = function () { resetAll(); };
+  $("btnUpload").onclick = function () { uploadCsv(); };
 
-  // expose for debugging
   window.startLiveMonitoring = startLive;
   window.stopLiveMonitoring = stopLive;
 
-  loadStats();
-  fetch(API + "/api/transactions/ml/status").then(r => r.json()).then(d => {
-    $("toolMsg").textContent = "ML status: " + (d.message || (d.ready ? "Ready" : "Not ready"));
-  }).catch(function () { $("toolMsg").textContent = "ML status: unavailable"; });
+  // Re-render charts when theme toggles
+  const prevToggle = window.toggleTheme;
+  window.toggleTheme = function () {
+    if (typeof prevToggle === "function") prevToggle();
+    renderCharts(lastStats.normal, lastStats.pending, lastStats.flagged);
+  };
+
+  function boot() {
+    if (typeof Chart === "undefined") {
+      $("chartMsg").textContent = "Waiting for Chart.js…";
+      setTimeout(boot, 200);
+      return;
+    }
+    loadStats();
+  }
+  boot();
+
+  fetch(API + "/api/transactions/ml/status")
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      $("toolMsg").textContent = "ML status: " + (d.message || (d.ready ? "Ready" : "Not ready"));
+    })
+    .catch(function () {
+      $("toolMsg").textContent = "ML status: unavailable";
+    });
 })();
 </script>
 </body>
