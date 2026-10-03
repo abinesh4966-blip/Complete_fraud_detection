@@ -54,11 +54,15 @@ th{font-size:11px;text-transform:uppercase;color:var(--muted);background:#e8eef6
 
 </style>
 <link rel="stylesheet" href="css/page-transitions.css">
+<script>(function(){try{if(localStorage.getItem("theme")==="dark")document.documentElement.classList.add("dark");}catch(e){}})();</script>
+<link rel="stylesheet" href="css/theme-dark.css">
+<script src="js/theme.js" defer></script>
 </head>
 <body>
 <div class="navbar">
   <strong>BSN · Reports</strong>
   <div class="nav-links">
+    <span class="who" id="userName">Admin</span>
     <a href="dashboard.html">Dashboard</a>
     <a href="admin-review.html">Case Review</a>
     <a href="checker.html">Checker</a>
@@ -66,7 +70,9 @@ th{font-size:11px;text-transform:uppercase;color:var(--muted);background:#e8eef6
     <a class="active" href="admin-reports.html">Reports</a>
     <a href="admin-users.html">Users</a>
     <a href="profile.html">Profile</a>
-    <button onclick="logout()">Logout</button>
+    <button type="button" id="themeBtn" data-theme-btn onclick="toggleTheme()">Dark Mode</button>
+    <button type="button" class="logout-btn" onclick="logout()">Logout</button>
+
   </div>
 </div>
 <div class="page">

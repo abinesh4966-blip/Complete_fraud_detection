@@ -90,6 +90,9 @@ input,select,textarea{
 canvas{max-width:100%}
 </style>
 <link rel="stylesheet" href="css/page-transitions.css">
+<script>(function(){try{if(localStorage.getItem("theme")==="dark")document.documentElement.classList.add("dark");}catch(e){}})();</script>
+<link rel="stylesheet" href="css/theme-dark.css">
+<script src="js/theme.js" defer></script>
 </head>
 <body>
 <div class="navbar">
@@ -101,7 +104,9 @@ canvas{max-width:100%}
     <a href="user-alerts.html">Alerts</a>
     <a class="active" href="user-report.html">Report</a>
     <a href="profile.html">Profile</a>
+    <button type="button" id="themeBtn" data-theme-btn onclick="toggleTheme()">Dark Mode</button>
     <button type="button" class="logout-btn" onclick="logout()">Logout</button>
+
   </div>
 </div>
 <div class="page">

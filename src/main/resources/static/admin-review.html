@@ -41,11 +41,15 @@ textarea{width:100%;border:1px solid var(--line);border-radius:2px;padding:8px;f
 
 </style>
 <link rel="stylesheet" href="css/page-transitions.css">
+<script>(function(){try{if(localStorage.getItem("theme")==="dark")document.documentElement.classList.add("dark");}catch(e){}})();</script>
+<link rel="stylesheet" href="css/theme-dark.css">
+<script src="js/theme.js" defer></script>
 </head>
 <body>
 <div class="navbar">
   <strong>BSN · Case Review</strong>
   <div class="nav-links">
+    <span class="who" id="userName">Admin</span>
     <a href="dashboard.html">Dashboard</a>
     <a class="active" href="admin-review.html">Case Review</a>
     <a href="checker.html">Checker</a>
@@ -53,7 +57,9 @@ textarea{width:100%;border:1px solid var(--line);border-radius:2px;padding:8px;f
     <a href="admin-reports.html">Reports</a>
     <a href="admin-users.html">Users</a>
     <a href="profile.html">Profile</a>
-    <button onclick="logout()">Logout</button>
+    <button type="button" id="themeBtn" data-theme-btn onclick="toggleTheme()">Dark Mode</button>
+    <button type="button" class="logout-btn" onclick="logout()">Logout</button>
+
   </div>
 </div>
 <div class="page">

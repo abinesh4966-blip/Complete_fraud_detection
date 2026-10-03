@@ -1,0 +1,86 @@
+/* Shared dark mode — formal banking */
+html.dark body,
+body.dark {
+  --bsn: #9ec5ea;
+  --bsn-deep: #6ea8d9;
+  --bsn-soft: #18304f;
+  --bg: #0b1a33;
+  --surface: #12233f;
+  --line: #2a3f5f;
+  --text: #e8eef6;
+  --muted: #9aadc2;
+  --danger: #f0a8a0;
+  --danger-bg: #3a1c1c;
+  --success: #7dcea0;
+  --success-bg: #1a3328;
+  --warn: #e0c07a;
+  --shadow: 0 10px 28px rgba(0,0,0,.35);
+  background: var(--bg) !important;
+  color: var(--text) !important;
+}
+
+html.dark .navbar,
+body.dark .navbar {
+  background: #061224 !important;
+}
+
+html.dark .panel,
+html.dark .card,
+html.dark .stat,
+html.dark .toolbar,
+html.dark .panel-body,
+body.dark .panel,
+body.dark .card,
+body.dark .stat,
+body.dark .toolbar {
+  background: var(--surface) !important;
+  border-color: var(--line) !important;
+  color: var(--text) !important;
+}
+
+html.dark input,
+html.dark select,
+html.dark textarea,
+body.dark input,
+body.dark select,
+body.dark textarea {
+  background: #0f1c33 !important;
+  color: var(--text) !important;
+  border-color: var(--line) !important;
+}
+
+html.dark label,
+html.dark h1,
+html.dark h2,
+html.dark .ph,
+html.dark .page-title h1,
+body.dark label,
+body.dark h1,
+body.dark h2 {
+  color: var(--bsn) !important;
+}
+
+html.dark th,
+body.dark th {
+  background: var(--bsn-soft) !important;
+  color: var(--muted) !important;
+}
+
+html.dark td,
+body.dark td {
+  border-color: var(--line) !important;
+  color: var(--text) !important;
+}
+
+html.dark .nav-links a.active,
+body.dark .nav-links a.active {
+  background: #fff !important;
+  color: #003366 !important;
+}
+
+html.dark .result,
+body.dark .result {
+  background: var(--bsn-soft) !important;
+  border-color: var(--line) !important;
+  color: var(--text) !important;
+}

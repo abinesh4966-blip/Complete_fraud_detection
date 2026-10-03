@@ -42,6 +42,9 @@ input{width:100%;border:1px solid var(--line);border-radius:2px;padding:10px 12p
 .sec h3{font-size:14px;color:var(--bsn);margin-bottom:4px}
 .badge{display:inline-block;padding:3px 8px;border-radius:2px;background:#e8eef6;color:var(--bsn);font-size:11px;font-weight:700}
 </style>
+<script>(function(){try{if(localStorage.getItem("theme")==="dark")document.documentElement.classList.add("dark");}catch(e){}})();</script>
+<link rel="stylesheet" href="css/theme-dark.css">
+<script src="js/theme.js" defer></script>
 </head>
 <body>
 <div class="navbar">
@@ -135,6 +138,8 @@ function logout() {
       <a href="admin-reports.html">Reports</a>
       <a href="admin-users.html">Users</a>
       <a class="active" href="profile.html">Profile</a>
+      <button type="button" id="themeBtn" data-theme-btn onclick="toggleTheme()">Dark Mode</button>
+      <button type="button" id="themeBtn" data-theme-btn onclick="toggleTheme()">Dark Mode</button>
       <button type="button" onclick="logout()">Logout</button>`;
   } else {
     nav.innerHTML = `
@@ -143,6 +148,7 @@ function logout() {
       <a href="user-alerts.html">Alerts</a>
       <a href="user-report.html">Report</a>
       <a class="active" href="profile.html">Profile</a>
+      <button type="button" id="themeBtn" data-theme-btn onclick="toggleTheme()">Dark Mode</button>
       <button type="button" onclick="logout()">Logout</button>`;
   }
 })();
@@ -284,6 +290,7 @@ async function removeAvatar() {
   }
 }
 
+if (window.applyTheme) applyTheme();
 loadProfile();
 </script>
 </body>
