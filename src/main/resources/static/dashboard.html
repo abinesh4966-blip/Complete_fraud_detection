@@ -325,26 +325,38 @@ const __role = (sessionStorage.getItem("role") || "").toUpperCase();
 
         function addFeedItem(containerId, tx, mode = "live") {
             const list = document.getElementById(containerId);
+            if (!list || !tx) return;
             if (list.querySelector(".empty")) list.innerHTML = "";
 
-            const isFlagged = tx.status === "SUSPICIOUS";
-            const reasons = (tx.reasons && tx.reasons.length > 0)
-                ? tx.reasons
-                : ["No anomaly detected"];
+            const status = tx.status || "NORMAL";
+            const isFlagged = status === "SUSPICIOUS";
+            const isPending = status === "PENDING_REVIEW";
+            let reasons = tx.reasons;
+            if ((!reasons || !reasons.length) && tx.reasonsJson) {
+                reasons = String(tx.reasonsJson).split("||").filter(Boolean);
+            }
+            if (!reasons || !reasons.length) reasons = ["No anomaly detected"];
             const preview = reasons[0];
-            const level = tx.riskLevel || (tx.riskScore >= 75 ? "CRITICAL" : tx.riskScore >= 50 ? "HIGH" : tx.riskScore >= 25 ? "MODERATE" : "LOW");
+            const score = (tx.riskScore != null && !isNaN(Number(tx.riskScore))) ? Number(tx.riskScore) : 0;
+            const level = tx.riskLevel || (score >= 75 ? "CRITICAL" : score >= 50 ? "HIGH" : score >= 25 ? "MODERATE" : "LOW");
+            const acc = tx.accountNumber != null ? tx.accountNumber : "—";
+            const amt = (tx.amount != null && !isNaN(Number(tx.amount))) ? Number(tx.amount).toFixed(2) : "0.00";
+            let label = "CLEARED";
+            let cls = "cleared";
+            if (isFlagged) { label = "FLAGGED"; cls = "flagged"; }
+            else if (isPending) { label = "PENDING REVIEW"; cls = "flagged"; }
 
             const item = document.createElement("div");
-            item.className = `activity-item ${isFlagged ? "flagged" : "cleared"}`;
+            item.className = `activity-item ${cls}`;
             item.title = "Click to view full reasons";
 
             item.innerHTML = `
                 <div class="row">
-                    <span class="acc">ACC ${tx.accountNumber}</span>
-                    <span class="amt">RM ${Number(tx.amount).toFixed(2)}</span>
+                    <span class="acc">ACC ${acc}</span>
+                    <span class="amt">RM ${amt}</span>
                 </div>
-                <div class="status-line ${isFlagged ? "flagged" : "cleared"}">
-                    ${isFlagged ? "FLAGGED" : "CLEARED"} — ${tx.riskScore}% · ${level}
+                <div class="status-line ${cls}">
+                    ${label} — ${score}% · ${level}
                 </div>
                 <div class="reason">${preview} <span style="opacity:.7">(click for more)</span></div>
                 <div class="reason-full" style="display:none; margin-top:8px; padding-top:8px; border-top:1px solid var(--border);">
@@ -379,14 +391,23 @@ const __role = (sessionStorage.getItem("role") || "").toUpperCase();
             }
         }
 
-        async function generateOneTransaction() {
+        async async function generateOneTransaction() {
             try {
                 const res = await fetch("https://fraud-detection-system-j4bg.onrender.com/api/transactions/generate", {
-                    method: "POST"
+                    method: "GET",
+                    headers: { "Accept": "application/json" }
                 });
+                if (!res.ok) {
+                    console.error("generate failed", res.status);
+                    return;
+                }
                 const tx = await res.json();
+                if (!tx || tx.accountNumber == null) {
+                    console.error("invalid generate payload", tx);
+                    return;
+                }
                 addFeedItem("liveFeed", tx, "live");
-                loadDashboard();
+                if (typeof loadDashboard === "function") loadDashboard();
             } catch (e) {
                 console.error(e);
             }

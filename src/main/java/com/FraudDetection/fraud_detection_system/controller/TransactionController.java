@@ -138,7 +138,12 @@ public class TransactionController {
     }
 
     @GetMapping("/generate")
-    public Transaction generate() {
+    public Transaction generateGet() {
+        return fraudDetectionService.generateRandomTransaction();
+    }
+
+    @PostMapping("/generate")
+    public Transaction generatePost() {
         return fraudDetectionService.generateRandomTransaction();
     }
 
