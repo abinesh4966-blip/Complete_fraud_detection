@@ -201,17 +201,21 @@ const __role = (sessionStorage.getItem("role") || "").toUpperCase();
         window.location.href = "access.html";
     }
 
-        document.getElementById("userName").textContent = sessionStorage.getItem("fullName") || "Admin";
+        const __who = document.getElementById("userName");
+        if (__who) __who.textContent = sessionStorage.getItem("fullName") || sessionStorage.getItem("username") || "Admin";
 
         function applyTheme() {
             const dark = localStorage.getItem("theme") === "dark";
             document.body.classList.toggle("dark", dark);
-            document.getElementById("themeBtn").textContent = dark ? "Light Mode" : "Dark Mode";
+            document.documentElement.classList.toggle("dark", dark);
+            document.querySelectorAll("#themeBtn, [data-theme-btn]").forEach(function(b){
+              b.textContent = dark ? "Light Mode" : "Dark Mode";
+            });
         }
         function toggleTheme() {
             localStorage.setItem("theme", document.body.classList.contains("dark") ? "light" : "dark");
             applyTheme();
-            loadDashboard();
+            if (typeof loadDashboard === "function") loadDashboard();
         }
         applyTheme();
 
@@ -392,47 +396,95 @@ const __role = (sessionStorage.getItem("role") || "").toUpperCase();
         }
 
         async async function generateOneTransaction() {
+            const statusEl = document.getElementById("liveStatus");
             try {
                 const res = await fetch("https://fraud-detection-system-j4bg.onrender.com/api/transactions/generate", {
                     method: "GET",
                     headers: { "Accept": "application/json" }
                 });
                 if (!res.ok) {
-                    console.error("generate failed", res.status);
+                    // fallback POST if GET blocked by old deploy
+                    const res2 = await fetch("https://fraud-detection-system-j4bg.onrender.com/api/transactions/generate", {
+                        method: "POST",
+                        headers: { "Accept": "application/json" }
+                    });
+                    if (!res2.ok) {
+                        if (statusEl) statusEl.textContent = "Live error: generate HTTP " + res.status;
+                        console.error("generate failed", res.status, res2.status);
+                        return;
+                    }
+                    const tx2 = await res2.json();
+                    if (tx2 && tx2.accountNumber != null) {
+                        addFeedItem("liveFeed", tx2, "live");
+                        if (typeof loadDashboard === "function") loadDashboard();
+                    }
                     return;
                 }
                 const tx = await res.json();
                 if (!tx || tx.accountNumber == null) {
+                    if (statusEl) statusEl.textContent = "Live error: empty transaction payload";
                     console.error("invalid generate payload", tx);
                     return;
                 }
                 addFeedItem("liveFeed", tx, "live");
+                if (statusEl) {
+                    statusEl.textContent = "Live Monitoring: Active · last ACC " + tx.accountNumber;
+                    statusEl.classList.add("active");
+                }
                 if (typeof loadDashboard === "function") loadDashboard();
+            } catch (e) {
+                console.error(e);
+                if (statusEl) statusEl.textContent = "Live error: " + (e.message || "network");
+            }
+        }
+
+        window.startLiveMonitoring = function startLiveMonitoring() {
+            try {
+                if (liveInterval) return;
+                const startBtn = document.getElementById("startBtn");
+                const stopBtn = document.getElementById("stopBtn");
+                const statusEl = document.getElementById("liveStatus");
+                if (startBtn) startBtn.style.display = "none";
+                if (stopBtn) stopBtn.style.display = "inline-block";
+                if (statusEl) {
+                    statusEl.textContent = "Live Monitoring: Starting…";
+                    statusEl.classList.add("active");
+                }
+                generateOneTransaction();
+                liveInterval = setInterval(generateOneTransaction, 3200);
+            } catch (e) {
+                console.error("startLiveMonitoring", e);
+                alert("Could not start live monitoring: " + e.message);
+            }
+        }
+
+        window.stopLiveMonitoring = function stopLiveMonitoring() {
+            try {
+                if (liveInterval) {
+                    clearInterval(liveInterval);
+                    liveInterval = null;
+                }
+                const startBtn = document.getElementById("startBtn");
+                const stopBtn = document.getElementById("stopBtn");
+                const statusEl = document.getElementById("liveStatus");
+                if (startBtn) startBtn.style.display = "inline-block";
+                if (stopBtn) stopBtn.style.display = "none";
+                if (statusEl) {
+                    statusEl.textContent = "Live Monitoring: Offline";
+                    statusEl.classList.remove("active");
+                }
             } catch (e) {
                 console.error(e);
             }
         }
 
-        function startLiveMonitoring() {
-            if (liveInterval) return;
-            document.getElementById("startBtn").style.display = "none";
-            document.getElementById("stopBtn").style.display = "inline-block";
-            document.getElementById("liveStatus").textContent = "Live Monitoring: Active";
-            document.getElementById("liveStatus").classList.add("active");
-            generateOneTransaction();
-            liveInterval = setInterval(generateOneTransaction, 3200);
-        }
-
-        function stopLiveMonitoring() {
-            if (liveInterval) {
-                clearInterval(liveInterval);
-                liveInterval = null;
-            }
-            document.getElementById("startBtn").style.display = "inline-block";
-            document.getElementById("stopBtn").style.display = "none";
-            document.getElementById("liveStatus").textContent = "Live Monitoring: Offline";
-            document.getElementById("liveStatus").classList.remove("active");
-        }
+        // Ensure buttons work even if onclick attribute is stripped
+        document.addEventListener("DOMContentLoaded", function () {
+            const startBtn = document.getElementById("startBtn");
+            const stopBtn = document.getElementById("stopBtn");
+            if (startBtn) startBtn.addEventListener("click", function (e) { e.preventDefault(); startLiveMonitoring(); });
+            if (stopBtn) stopBtn.addEventListener("click", function (e) { e.preventDefault(); stopLiveMonitoring(); });
+        });
 
         async function startSequentialUpload() {
             if (isUploading) return;
