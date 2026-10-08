@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Customer Reports · BSN FDS</title>
+<link rel="stylesheet" href="css/app-shell.css">
+<link rel="stylesheet" href="css/theme-dark.css">
+<link rel="stylesheet" href="css/page-transitions.css">
+<script>(function(){try{if(localStorage.getItem("theme")==="dark")document.documentElement.classList.add("dark");}catch(e){}})();</script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&display=swap');
+:root{--bsn:#003366;--bg:#eef2f7;--surface:#fff;--line:#cdd7e5;--text:#1a2332;--muted:#5c6b7c;--danger:#b42318;--success:#0f6b4c;--shadow:0 10px 28px rgba(0,38,77,.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Libre Franklin',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+h1{font-size:22px;color:var(--bsn);margin-bottom:6px}
+.sub{color:var(--muted);font-size:14px;margin-bottom:16px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:4px;box-shadow:var(--shadow)}
+.ph{padding:12px 16px;border-bottom:1px solid var(--line);font-weight:700;color:var(--bsn);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.pb{padding:16px;overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-size:11px;text-transform:uppercase;color:var(--muted)}
+.badge{display:inline-block;padding:2px 7px;border-radius:2px;font-size:11px;font-weight:700;background:#e8eef6;color:var(--bsn)}
+.btn{border:1px solid var(--line);background:var(--surface);color:var(--bsn);border-radius:2px;padding:6px 10px;font:inherit;font-size:12px;font-weight:700;cursor:pointer;margin:2px}
+.btn-primary{background:var(--bsn);color:#fff;border-color:var(--bsn)}
+.msg{font-size:13px;margin-top:10px;color:var(--muted)}
+select,textarea{font:inherit;font-size:12px;padding:6px;border:1px solid var(--line);border-radius:2px;background:var(--surface);color:var(--text);max-width:100%}
+textarea{width:100%;min-height:48px;margin-top:4px}
+.assign-box{margin-top:6px;padding-top:6px;border-top:1px dashed var(--line)}
+.hint{font-size:11px;color:var(--muted);margin-top:4px}
+</style>
+</head>
+<body>
+<div style="max-width:1200px;margin:0 auto;padding:8px 0 40px">
+  <h1>Customer reports</h1>
+  <p class="sub">Manual reports from customers. SuperAdmin can <strong>assign</strong> cases to admins to handle.</p>
+  <div class="panel">
+    <div class="ph">
+      <span>Report queue</span>
+      <button type="button" class="btn" id="btnRefresh">Refresh</button>
+    </div>
+    <div class="pb">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th><th>Customer</th><th>Category</th><th>Description</th>
+            <th>Status</th><th>Assigned to</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"><tr><td colspan="7">Loading…</td></tr></tbody>
+      </table>
+      <div class="msg" id="msg"></div>
+    </div>
+  </div>
+</div>
+<script src="js/theme.js"></script>
+<script src="js/app-shell.js"></script>
+<script src="js/page-transitions.js"></script>
+<script>
+(function () {
+  const API = "https://fraud-detection-system-j4bg.onrender.com";
+  const role = (sessionStorage.getItem("role") || "").toUpperCase();
+  const actor = sessionStorage.getItem("username") || "";
+  const isSuper = role === "SUPER_ADMIN";
+
+  if (sessionStorage.getItem("isLoggedIn") !== "true" || (role !== "ADMIN" && role !== "SUPER_ADMIN")) {
+    location.href = "access.html";
+    return;
+  }
+
+  let admins = [];
+
+  async function loadAdmins() {
+    if (!isSuper) return;
+    try {
+      const res = await fetch(API + "/api/reports/assignable-admins");
+      admins = await res.json();
+      if (!Array.isArray(admins)) admins = [];
+    } catch (e) {
+      admins = [];
+    }
+  }
+
+  function adminOptions(selected) {
+    let html = "<option value=''>— Select admin —</option>";
+    admins.forEach(function (a) {
+      const u = a.username || "";
+      const label = (a.fullName ? a.fullName + " (" + u + ")" : u) + " · " + (a.role || "");
+      html += "<option value='" + u + "'" + (selected === u ? " selected" : "") + ">" + label + "</option>";
+    });
+    return html;
+  }
+
+  async function load() {
+    const tb = document.getElementById("tbody");
+    const msg = document.getElementById("msg");
+    try {
+      const res = await fetch(API + "/api/reports/all?actorUsername=" + encodeURIComponent(actor));
+      const rows = await res.json();
+      if (!Array.isArray(rows) || !rows.length) {
+        tb.innerHTML = "<tr><td colspan='7'>No customer reports yet.</td></tr>";
+        msg.textContent = "Customers submit from their Report page.";
+        return;
+      }
+      tb.innerHTML = rows.map(function (r) {
+        const assigned = r.assignedTo || "";
+        const assignBlock = isSuper
+          ? ("<div class='assign-box'>" +
+             "<select data-assign-for='" + r.id + "'>" + adminOptions(assigned) + "</select> " +
+             "<button type='button' class='btn btn-primary' data-push='" + r.id + "'>Push to admin</button> " +
+             (assigned ? "<button type='button' class='btn' data-unassign='" + r.id + "'>Unassign</button>" : "") +
+             "<div class='hint'>SuperAdmin only: assign this case to an admin</div></div>")
+          : "";
+
+        return "<tr>" +
+          "<td>#" + r.id + "<br><span class='hint'>" +
+          (r.createdAt ? String(r.createdAt).replace("T"," ").substring(0,19) : "") + "</span></td>" +
+          "<td><strong>" + (r.username || "—") + "</strong><br><span class='hint'>" +
+          (r.accountNumber || "") + "<br>" + (r.email || "") + "</span></td>" +
+          "<td>" + (r.category || "—") + (r.relatedTxId ? "<br>TX " + r.relatedTxId : "") + "</td>" +
+          "<td style='max-width:240px'>" + (r.description || "") + "</td>" +
+          "<td><span class='badge'>" + (r.status || "OPEN") + "</span>" +
+          (r.reviewedBy ? "<br><span class='hint'>by " + r.reviewedBy + "</span>" : "") + "</td>" +
+          "<td>" + (assigned ? ("<strong>" + assigned + "</strong>" +
+            (r.assignedBy ? "<br><span class='hint'>by " + r.assignedBy + "</span>" : "")) : "<span class='hint'>Unassigned</span>") +
+          "</td>" +
+          "<td>" +
+          "<select data-status-for='" + r.id + "'>" +
+          ["OPEN","IN_REVIEW","RESOLVED","REJECTED"].map(function (s) {
+            return "<option value='" + s + "'" + (r.status === s ? " selected" : "") + ">" + s + "</option>";
+          }).join("") +
+          "</select>" +
+          "<textarea data-note-for='" + r.id + "' placeholder='Officer note'>" + (r.adminNote || "") + "</textarea>" +
+          "<button type='button' class='btn btn-primary' data-save='" + r.id + "'>Save status</button>" +
+          assignBlock +
+          "</td></tr>";
+      }).join("");
+      msg.textContent = rows.length + " report(s)" + (isSuper ? " · You can push cases to admins" : " · Showing cases assigned to you or unassigned");
+    } catch (e) {
+      tb.innerHTML = "<tr><td colspan='7'>Failed to load reports.</td></tr>";
+      msg.textContent = String(e.message || e);
+    }
+  }
+
+  document.getElementById("tbody").addEventListener("click", async function (e) {
+    const saveId = e.target.getAttribute("data-save");
+    const pushId = e.target.getAttribute("data-push");
+    const unId = e.target.getAttribute("data-unassign");
+    const msg = document.getElementById("msg");
+
+    if (saveId) {
+      const statusEl = document.querySelector("[data-status-for='" + saveId + "']");
+      const noteEl = document.querySelector("[data-note-for='" + saveId + "']");
+      try {
+        const res = await fetch(API + "/api/reports/" + saveId + "/status", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            status: statusEl ? statusEl.value : "IN_REVIEW",
+            adminNote: noteEl ? noteEl.value : "",
+            actorUsername: actor
+          })
+        });
+        const data = await res.json();
+        msg.textContent = data.message || "Updated";
+        load();
+      } catch (err) {
+        msg.textContent = "Update failed";
+      }
+      return;
+    }
+
+    if (pushId) {
+      const sel = document.querySelector("[data-assign-for='" + pushId + "']");
+      const assignTo = sel ? sel.value : "";
+      if (!assignTo) {
+        msg.textContent = "Select an admin first";
+        return;
+      }
+      try {
+        const res = await fetch(API + "/api/reports/" + pushId + "/assign", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ actorUsername: actor, assignTo: assignTo })
+        });
+        const data = await res.json();
+        msg.textContent = data.message || (data.success ? "Assigned" : "Failed");
+        if (data.success) load();
+      } catch (err) {
+        msg.textContent = "Assign failed — server offline?";
+      }
+      return;
+    }
+
+    if (unId) {
+      if (!confirm("Unassign this report?")) return;
+      try {
+        const res = await fetch(API + "/api/reports/" + unId + "/unassign", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ actorUsername: actor })
+        });
+        const data = await res.json();
+        msg.textContent = data.message || "Unassigned";
+        if (data.success) load();
+      } catch (err) {
+        msg.textContent = "Unassign failed";
+      }
+    }
+  });
+
+  document.getElementById("btnRefresh").onclick = load;
+
+  loadAdmins().then(load);
+})();
+</script>
+</body>
+</html>

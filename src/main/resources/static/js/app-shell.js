@@ -37,6 +37,7 @@
     ["checker.html", "Transaction Checker"],
     ["history.html", "History"],
     ["admin-reports.html", "Reports"],
+    ["admin-customer-reports.html", "Customer Reports"],
     ["admin-users.html", "Users"],
     ["profile.html", "Profile Centre"]
   ];

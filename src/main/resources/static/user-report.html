@@ -4,169 +4,137 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Report · BSN FDS</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&display=swap');
-:root{
-  --bsn:#003366; --bsn-deep:#00244d; --bsn-soft:#e8eef6; --gold:#c4a35a;
-  --bg:#eef2f7; --surface:#ffffff; --line:#cdd7e5; --text:#1a2332; --muted:#5c6b7c;
-  --danger:#b42318; --danger-bg:#fdecea; --success:#0f6b4c; --success-bg:#e8f6ef;
-  --warn:#9a6b12; --shadow:0 10px 28px rgba(0,38,77,.07); --radius:4px;
-}
-body.dark{
-  --bg:#0b1a33; --surface:#12233f; --line:#2a3f5f; --text:#e8eef6; --muted:#9aadc2;
-  --bsn-soft:#18304f; --shadow:0 10px 28px rgba(0,0,0,.35);
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Libre Franklin',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5}
-.navbar{background:var(--bsn);color:#fff;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
-body.dark .navbar{background:#061224}
-.brand{display:flex;align-items:center;gap:12px}
-.brand-mark{width:36px;height:36px;border-radius:2px;background:rgba(255,255,255,.12);display:grid;place-items:center;font-weight:700;font-size:12px}
-.brand h2{font-size:16px;font-weight:700}
-.brand span{display:block;font-size:11px;opacity:.75;font-weight:500}
-.nav-links{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.nav-links .who{font-size:13px;opacity:.9;margin-right:4px}
-.nav-links a,.nav-links button{color:#fff;text-decoration:none;background:transparent;border:1px solid rgba(255,255,255,.32);padding:8px 12px;border-radius:2px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
-.nav-links a:hover,.nav-links button:hover{background:rgba(255,255,255,.12)}
-.nav-links a.active{background:#fff;color:var(--bsn);border-color:#fff}
-.logout-btn{border-color:rgba(240,180,174,.55)!important;background:rgba(180,35,24,.22)!important}
-.page{max-width:1180px;margin:0 auto;padding:28px 20px 48px}
-.page-title{margin-bottom:20px}
-.page-title h1{font-size:24px;color:var(--bsn);font-weight:700;margin-bottom:6px}
-body.dark .page-title h1{color:#9ec5ea}
-.page-title p{color:var(--muted);font-size:14px}
-.card,.panel,.toolbar,.stat{
-  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)
-}
-.toolbar{padding:18px 20px;margin-bottom:20px}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
-@media(max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:520px){.stats{grid-template-columns:1fr}}
-.stat{padding:18px 16px;min-height:110px;display:flex;flex-direction:column;justify-content:space-between}
-.stat .label{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
-.stat .value{font-size:28px;font-weight:700;color:var(--bsn);margin-top:10px}
-body.dark .stat .value{color:#9ec5ea}
-.stat.flag .value{color:var(--danger)}
-.stat.ok .value{color:var(--success)}
-.panel{overflow:hidden;margin-bottom:18px}
-.panel-head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-.panel-head h2{font-size:15px;color:var(--bsn);font-weight:700}
-body.dark .panel-head h2{color:#9ec5ea}
-.panel-body{padding:14px 16px}
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.grid-3{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:16px}
-@media(max-width:1000px){.grid-2,.grid-3{grid-template-columns:1fr}}
-.btn{border:1px solid var(--line);background:var(--surface);color:var(--text);padding:10px 14px;border-radius:2px;font:inherit;font-size:13px;font-weight:700;cursor:pointer}
-.btn-primary{background:var(--bsn);color:#fff;border-color:var(--bsn)}
-.btn-primary:hover{background:var(--bsn-deep)}
-.btn-danger{background:var(--danger);color:#fff;border-color:var(--danger)}
-.btn-ghost{background:transparent;color:var(--bsn)}
-.btn-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-.pill{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;font-size:12px;font-weight:700;background:var(--bsn-soft);color:var(--muted);border:1px solid var(--line)}
-.pill.on{background:var(--success-bg);color:var(--success);border-color:#b7e0cc}
-.empty{text-align:center;color:var(--muted);font-size:14px;padding:36px 16px;line-height:1.6}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle}
-th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);background:var(--bsn-soft);font-weight:700}
-label{display:block;font-size:12px;font-weight:600;color:var(--bsn);margin:0 0 6px}
-body.dark label{color:#9ec5ea}
-input,select,textarea{
-  width:100%;border:1px solid var(--line);border-radius:2px;padding:10px 12px;font:inherit;font-size:14px;
-  background:var(--surface);color:var(--text);margin-bottom:12px
-}
-.badge{display:inline-block;padding:4px 10px;border-radius:2px;font-size:11px;font-weight:700}
-.badge.cleared,.badge.NORMAL{background:var(--success-bg);color:var(--success)}
-.badge.flagged,.badge.SUSPICIOUS,.badge.ADMIN{background:var(--danger-bg);color:var(--danger)}
-.badge.SUPER_ADMIN{background:#fff6e5;color:var(--warn)}
-.badge.USER{background:var(--bsn-soft);color:var(--bsn)}
-.badge.LOCK{background:var(--danger-bg);color:var(--danger)}
-.feed-item{border:1px solid var(--line);border-radius:2px;padding:12px;margin-bottom:10px;background:var(--bsn-soft);cursor:pointer;font-size:13px}
-.feed-item .row{display:flex;justify-content:space-between;gap:8px;margin-bottom:4px}
-.msg{margin-top:10px;padding:10px 12px;border-radius:2px;font-size:13px}
-.msg.ok{background:var(--success-bg);color:var(--success);border:1px solid #b7e0cc}
-.msg.err{background:var(--danger-bg);color:var(--danger);border:1px solid #f0b4ae}
-.filters{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin-bottom:14px}
-.filters > div{min-width:140px}
-canvas{max-width:100%}
-</style>
+<link rel="stylesheet" href="css/app-shell.css">
+<link rel="stylesheet" href="css/theme-dark.css">
 <link rel="stylesheet" href="css/page-transitions.css">
 <script>(function(){try{if(localStorage.getItem("theme")==="dark")document.documentElement.classList.add("dark");}catch(e){}})();</script>
-<link rel="stylesheet" href="css/theme-dark.css">
-<script src="js/theme.js" defer></script>
-
-<link rel="stylesheet" href="css/app-shell.css">
-<script>(function(){try{if(localStorage.getItem("theme")==="dark")document.documentElement.classList.add("dark");}catch(e){}})();</script>
-<link rel="stylesheet" href="css/theme-dark.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&display=swap');
+:root{--bsn:#003366;--bg:#eef2f7;--surface:#fff;--line:#cdd7e5;--text:#1a2332;--muted:#5c6b7c;--danger:#b42318;--success:#0f6b4c;--shadow:0 10px 28px rgba(0,38,77,.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Libre Franklin',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+h1{font-size:22px;color:var(--bsn);margin-bottom:6px}
+.sub{color:var(--muted);font-size:14px;margin-bottom:16px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:4px;box-shadow:var(--shadow);margin-bottom:14px}
+.ph{padding:12px 16px;border-bottom:1px solid var(--line);font-weight:700;color:var(--bsn)}
+.pb{padding:16px}
+label{display:block;font-size:12px;font-weight:600;color:var(--bsn);margin:10px 0 6px}
+input,select,textarea{width:100%;border:1px solid var(--line);border-radius:2px;padding:10px 12px;font:inherit;font-size:14px;background:var(--surface);color:var(--text)}
+textarea{min-height:120px;resize:vertical}
+.btn{border:none;border-radius:2px;padding:11px 16px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;background:var(--bsn);color:#fff;margin-top:12px}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+.msg{margin-top:12px;font-size:13px}
+.msg.ok{color:var(--success)}
+.msg.err{color:var(--danger)}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+th,td{padding:8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-size:11px;color:var(--muted);text-transform:uppercase}
+.badge{display:inline-block;padding:2px 7px;border-radius:2px;font-size:11px;font-weight:700;background:#e8eef6;color:var(--bsn)}
+</style>
 </head>
 <body>
-<div class="navbar">
-  <div class="brand"><div class="brand-mark">BSN</div><div><h2>BSN Fraud Detection</h2><span>Customer Portal</span></div></div>
-  <div class="nav-links">
-    <span class="who" id="userName">Customer</span>
-    <a href="user-dashboard.html">Dashboard</a>
-    <a href="user-transactions.html">My Transactions</a>
-    <a href="user-alerts.html">Alerts</a>
-    <a class="active" href="user-report.html">Report</a>
-    <a href="profile.html">Profile</a>
-    <button type="button" id="themeBtn" data-theme-btn onclick="toggleTheme()">Dark Mode</button>
-    <button type="button" class="logout-btn" onclick="logout()">Logout</button>
+<div style="max-width:720px;margin:0 auto;padding:8px 0 40px">
+  <h1>Report suspicious activity</h1>
+  <p class="sub">Submit a report to the fraud team. SuperAdmin and officers can review it in the admin console.</p>
 
-  </div>
-</div>
-<div class="page">
-  <div class="page-title">
-    <h1>Report suspicious activity</h1>
-    <p>Tell us about something that does not look right on your account.</p>
-  </div>
-  <div class="panel" style="max-width:640px">
-    <div class="panel-body">
-      <label>Subject</label>
-      <input id="subject" placeholder="Short summary">
-      <label>Details</label>
-      <textarea id="details" rows="6" placeholder="Describe what happened"></textarea>
-      <button class="btn btn-primary" type="button" onclick="submitReport()">Submit report</button>
-      <div id="msg" class="msg" style="display:none"></div>
+  <div class="panel">
+    <div class="ph">New report</div>
+    <div class="pb">
+      <label>Category</label>
+      <select id="category">
+        <option value="SUSPICIOUS_TRANSACTION">Suspicious transaction</option>
+        <option value="UNAUTHORIZED_ACCESS">Unauthorized access</option>
+        <option value="PHISHING">Phishing / scam contact</option>
+        <option value="OTHER">Other</option>
+      </select>
+      <label>Related transaction ID (optional)</label>
+      <input id="relatedTxId" placeholder="e.g. 12">
+      <label>Description</label>
+      <textarea id="description" placeholder="Describe what happened, when, and any amount or location..."></textarea>
+      <button type="button" class="btn" id="btnSubmit">Submit report</button>
+      <div class="msg" id="msg"></div>
     </div>
   </div>
+
+  <div class="panel">
+    <div class="ph">My submitted reports</div>
+    <div class="pb" id="mineBox">Loading…</div>
+  </div>
 </div>
+
+<script src="js/theme.js"></script>
+<script src="js/app-shell.js"></script>
+<script src="js/page-transitions.js"></script>
 <script>
-if (sessionStorage.getItem("isLoggedIn") !== "true" || sessionStorage.getItem("role") !== "USER") {
-            window.location.href = "access.html";
-        }
-        function logout() { sessionStorage.clear(); window.location.href = "access.html"; }
+(function () {
+  const API = "https://fraud-detection-system-j4bg.onrender.com";
+  const username = sessionStorage.getItem("username") || "";
+  const accountNumber = sessionStorage.getItem("accountNumber") || "";
+  const email = sessionStorage.getItem("email") || "";
+  if (sessionStorage.getItem("isLoggedIn") !== "true" || !username) {
+    location.href = "access.html";
+    return;
+  }
 
-        function submitReport() {
-            const msg = document.getElementById("msg");
-            const message = document.getElementById("message").value.trim();
-            if (!message) {
-                msg.style.color = "#b42318";
-                msg.textContent = "Please enter a description";
-                return;
-            }
+  const msg = document.getElementById("msg");
+  const btn = document.getElementById("btnSubmit");
 
-            // Store locally for demo (admin can be extended later to read reports from API)
-            const reports = JSON.parse(localStorage.getItem("userReports") || "[]");
-            reports.push({
-                id: Date.now(),
-                username: sessionStorage.getItem("username"),
-                accountNumber: sessionStorage.getItem("accountNumber"),
-                txId: document.getElementById("txId").value || null,
-                issueType: document.getElementById("issueType").value,
-                message: message,
-                createdAt: new Date().toISOString()
-            });
-            localStorage.setItem("userReports", JSON.stringify(reports));
+  async function loadMine() {
+    const box = document.getElementById("mineBox");
+    try {
+      const res = await fetch(API + "/api/reports/mine?username=" + encodeURIComponent(username));
+      const rows = await res.json();
+      if (!Array.isArray(rows) || !rows.length) {
+        box.innerHTML = "<p style='color:var(--muted);font-size:13px'>No reports submitted yet.</p>";
+        return;
+      }
+      box.innerHTML = "<table><thead><tr><th>ID</th><th>Category</th><th>Status</th><th>When</th><th>Description</th></tr></thead><tbody>" +
+        rows.map(function (r) {
+          return "<tr><td>#" + r.id + "</td><td>" + (r.category || "—") + "</td><td><span class='badge'>" +
+            (r.status || "OPEN") + "</span></td><td>" + (r.createdAt ? String(r.createdAt).replace("T"," ").substring(0,19) : "—") +
+            "</td><td>" + (r.description || "").substring(0,120) + "</td></tr>";
+        }).join("") + "</tbody></table>";
+    } catch (e) {
+      box.innerHTML = "<p style='color:var(--danger)'>Could not load your reports.</p>";
+    }
+  }
 
-            msg.style.color = "#1f6f64";
-            msg.textContent = "Report submitted. Our team will review it.";
-            document.getElementById("message").value = "";
-            document.getElementById("txId").value = "";
-        }
+  btn.onclick = async function () {
+    const description = document.getElementById("description").value.trim();
+    msg.className = "msg";
+    msg.textContent = "Submitting…";
+    btn.disabled = true;
+    try {
+      const res = await fetch(API + "/api/reports/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: username,
+          accountNumber: accountNumber,
+          email: email,
+          category: document.getElementById("category").value,
+          relatedTxId: document.getElementById("relatedTxId").value.trim(),
+          description: description
+        })
+      });
+      const data = await res.json();
+      msg.className = "msg " + (data.success ? "ok" : "err");
+      msg.textContent = data.message || (data.success ? "Submitted" : "Failed");
+      if (data.success) {
+        document.getElementById("description").value = "";
+        document.getElementById("relatedTxId").value = "";
+        loadMine();
+      }
+    } catch (e) {
+      msg.className = "msg err";
+      msg.textContent = "Server offline or waking up. Try again in a moment.";
+    } finally {
+      btn.disabled = false;
+    }
+  };
+
+  loadMine();
+})();
 </script>
-<script src="js/page-transitions.js" defer></script>
-
-<script src="js/theme.js" defer></script>
-<script src="js/app-shell.js" defer></script>
-<script src="js/page-transitions.js" defer></script>
 </body>
 </html>
